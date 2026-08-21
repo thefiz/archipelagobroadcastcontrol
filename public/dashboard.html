@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Production Dashboard</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css?v=3.5">
 </head>
 <body>
   <main class="shell">
     <header>
       <h1>Production Dashboard</h1>
-      <p class="muted">Sorted by live state and player-reported priority.</p>
+      <p class="muted">Player coordination, system health, and production controls.</p>
     </header>
 
     <section id="login" class="card">
@@ -22,18 +22,46 @@
       <div id="loginNotice" class="notice" aria-live="polite"></div>
     </section>
 
+    <section id="healthPanel" class="card hidden" style="margin-top:16px">
+      <div class="card-top">
+        <div>
+          <h2 style="margin-bottom:4px">System Health</h2>
+          <div id="healthSummary" class="muted">Waiting for server state…</div>
+        </div>
+        <span id="healthBadge" class="badge">UNKNOWN</span>
+      </div>
+      <div class="health-grid" style="margin-top:14px">
+        <div class="health-metric"><span>Version</span><strong id="healthVersion">—</strong></div>
+        <div class="health-metric"><span>Uptime</span><strong id="healthUptime">—</strong></div>
+        <div class="health-metric"><span>Players</span><strong id="healthPlayers">—</strong></div>
+        <div class="health-metric"><span>WebSockets</span><strong id="healthSockets">—</strong></div>
+        <div class="health-metric"><span>On Air</span><strong id="healthLive">—</strong></div>
+        <div class="health-metric"><span>Compact</span><strong id="healthCompact">—</strong></div>
+        <div class="health-metric"><span>State Saved</span><strong id="healthSaved">—</strong></div>
+        <div class="health-metric"><span>Server</span><strong id="healthConnection">CONNECTED</strong></div>
+      </div>
+    </section>
+
     <section id="modeControls" class="card hidden" style="margin-top:16px">
-      <strong>Compact window mode</strong>
+      <div class="card-top">
+        <div>
+          <strong>Production Controls</strong>
+          <div class="muted" style="margin-top:4px">Compact monitor mode and event-wide recovery controls.</div>
+        </div>
+      </div>
       <div class="controls">
         <button type="button" class="small-button compact-mode" data-mode="priority">Calls</button>
         <button type="button" class="small-button compact-mode" data-mode="normal">Normal</button>
         <button type="button" class="small-button compact-mode" data-mode="bk">BK</button>
         <button type="button" class="small-button compact-mode" data-mode="all">All</button>
+        <button id="resetEvent" type="button" class="small-button danger-button">Reset Event State</button>
       </div>
+      <div id="controlNotice" class="notice" aria-live="polite"></div>
     </section>
+
     <section id="dashboard" class="grid player-grid hidden" style="margin-top:16px"></section>
   </main>
 
-  <script type="module" src="/dashboard.js"></script>
+  <script type="module" src="/dashboard.js?v=3.5"></script>
 </body>
 </html>

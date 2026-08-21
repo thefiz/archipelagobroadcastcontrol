@@ -187,3 +187,52 @@ select, input {
   .multiview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shell { width: min(100% - 20px, 1100px); padding-top: 14px; }
 }
+
+/* v3.5 production health and recovery controls */
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.health-metric {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-2);
+  padding: 10px 12px;
+}
+.health-metric span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.health-metric strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.05rem;
+}
+.badge.health-ok {
+  border-color: var(--good);
+  background: color-mix(in srgb, var(--good) 20%, var(--panel-2));
+}
+.badge.health-warning {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 22%, var(--panel-2));
+}
+.danger-button {
+  border-color: var(--danger);
+}
+.danger-button:hover,
+.danger-button:focus-visible {
+  background: color-mix(in srgb, var(--danger) 20%, var(--panel-2));
+  border-color: var(--danger);
+}
+@media (max-width: 800px) {
+  .health-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

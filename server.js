@@ -14,6 +14,10 @@ const ADMIN_KEY = process.env.ADMIN_KEY || "change-me-before-the-event";
 const CONFIG_PATH = process.env.CONFIG_PATH || path.join(__dirname, "config.json");
 const STATE_PATH = process.env.STATE_PATH || path.join(__dirname, "data", "state.json");
 const WS_PATH = "/ws";
+const APP_VERSION = "3.5";
+const STARTED_AT = new Date();
+let lastPersistAt = fs.existsSync(STATE_PATH) ? fs.statSync(STATE_PATH).mtime.toISOString() : null;
+let wss = null;
 
 function loadJson(filePath, fallback = null) {
   try {
@@ -76,6 +80,7 @@ function persistState() {
   const safeState = structuredClone(state);
   for (const player of Object.values(safeState.players)) player.connected = false;
   fs.writeFileSync(STATE_PATH, JSON.stringify(safeState, null, 2));
+  lastPersistAt = new Date().toISOString();
 }
 
 function publicConfig() {
@@ -96,11 +101,29 @@ function safePlayerState(playerId) {
   };
 }
 
+function systemStatus() {
+  const players = Object.values(state.players);
+  const livePlayer = players.find((player) => player.airState === "live");
+  return {
+    version: APP_VERSION,
+    startedAt: STARTED_AT.toISOString(),
+    uptimeSeconds: Math.floor(process.uptime()),
+    configuredPlayers: players.length,
+    connectedPlayers: players.filter((player) => player.connected).length,
+    websocketClients: wss?.clients?.size ?? 0,
+    currentLivePlayerId: livePlayer?.id || null,
+    currentLivePlayerName: livePlayer?.name || null,
+    compactMode: state.compactMode,
+    lastPersistAt
+  };
+}
+
 function snapshot() {
   return {
     eventName: state.eventName,
     generatedAt: new Date().toISOString(),
     compactMode: state.compactMode,
+    system: systemStatus(),
     players: Object.keys(state.players).map(safePlayerState)
   };
 }
@@ -215,6 +238,32 @@ function clearPlayerStatus(playerId) {
   player.statusExpiresAt = null;
   player.asapTakenLiveAt = null;
   player.updatedAt = new Date().toISOString();
+  return { ok: true };
+}
+
+function panicResetPlayer(playerId) {
+  const player = state.players[playerId];
+  if (!player) return { ok: false, error: "Unknown player." };
+  player.status = "normal";
+  player.statusSetAt = null;
+  player.statusExpiresAt = null;
+  player.asapTakenLiveAt = null;
+  player.airState = "off";
+  player.updatedAt = new Date().toISOString();
+  return { ok: true };
+}
+
+function resetEventState() {
+  const now = new Date().toISOString();
+  for (const player of Object.values(state.players)) {
+    player.status = "normal";
+    player.statusSetAt = null;
+    player.statusExpiresAt = null;
+    player.asapTakenLiveAt = null;
+    player.airState = "off";
+    player.updatedAt = now;
+  }
+  state.compactMode = "priority";
   return { ok: true };
 }
 
@@ -357,14 +406,14 @@ const server = createServer((req, res) => {
     return sendJson(
       res,
       200,
-      { ok: true, players: Object.keys(state.players).length, websocketPath: WS_PATH },
+      { ok: true, version: APP_VERSION, players: Object.keys(state.players).length, websocketPath: WS_PATH, uptimeSeconds: Math.floor(process.uptime()) },
       { head: isHead }
     );
   }
   serveStatic(req, res);
 });
 
-const wss = new WebSocketServer({ server, path: WS_PATH });
+wss = new WebSocketServer({ server, path: WS_PATH });
 
 function send(ws, type, data = {}, requestId = undefined) {
   if (ws.readyState !== WebSocket.OPEN) return;
@@ -522,6 +571,25 @@ function handleMessage(ws, message) {
       return ack(ws, requestId, { player: safePlayerState(playerId) });
     }
 
+    case "admin.player.panic": {
+      if (!requireAdmin(ws, requestId)) return;
+      const { playerId } = data;
+      const result = panicResetPlayer(playerId);
+      if (!result.ok) return fail(ws, requestId, result.error);
+      persistState();
+      broadcastSnapshot();
+      return ack(ws, requestId, { player: safePlayerState(playerId) });
+    }
+
+    case "admin.event.reset": {
+      if (!requireAdmin(ws, requestId)) return;
+      resetEventState();
+      persistState();
+      broadcast("compact.mode", { mode: state.compactMode });
+      broadcastSnapshot();
+      return ack(ws, requestId, { state: snapshot() });
+    }
+
     case "admin.compact.mode": {
       if (!requireAdmin(ws, requestId)) return;
       const resolvedMode = resolveCompactMode(data.mode);
@@ -610,7 +678,7 @@ setInterval(() => {
 }, 1000);
 
 server.listen(PORT, HOST, () => {
-  console.log(`Archipelago Broadcast Control v3 running at http://${HOST}:${PORT}`);
+  console.log(`Archipelago Broadcast Control v3.5 running at http://${HOST}:${PORT}`);
   console.log(`Plain WebSocket endpoint: ws://${HOST}:${PORT}${WS_PATH}`);
   if (ADMIN_KEY === "change-me-before-the-event") {
     console.warn("WARNING: Set a strong ADMIN_KEY before using this at an event.");

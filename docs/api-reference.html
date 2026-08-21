@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Archipelago Broadcast Control — Complete API Reference v3.4</title>
+<title>Archipelago Broadcast Control — Complete API Reference v3.5</title>
 <style>
 :root{
   --bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;
@@ -70,6 +70,8 @@ table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td
 <li><a href="#admin-game">admin.player.game</a></li>
 <li><a href="#admin-update">admin.player.update</a></li>
 <li><a href="#admin-clear">admin.player.clear</a></li>
+<li><a href="#admin-panic">admin.player.panic</a></li>
+<li><a href="#admin-event-reset">admin.event.reset</a></li>
 <li><a href="#admin-compact">admin.compact.mode</a></li>
 <li><a href="#state-get">state.get</a></li>
 </ul>
@@ -86,6 +88,7 @@ table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td
 <li><a href="#companion">Bitfocus Companion</a></li>
 <li><a href="#graphics">Graphics Integration</a></li>
 <li><a href="#quick-reference">Quick Reference</a></li>
+<li><a href="#versioning">Versioning</a></li>
 </ul>
 </nav>
 
@@ -94,7 +97,7 @@ table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td
 <div class="eyebrow">Archipelago Broadcast Control</div>
 <h1>Complete API Reference</h1>
 <p class="subtitle">HTTP and WebSocket interfaces for player state, lower thirds, production control, compact monitor modes, and broadcast automation.</p>
-<div class="meta"><span class="pill">Server Version: v3.4</span><span class="pill">HTTP / JSON</span><span class="pill">Standard WebSocket / JSON</span></div>
+<div class="meta"><span class="pill">Server Version: v3.5</span><span class="pill">HTTP / JSON</span><span class="pill">Standard WebSocket / JSON</span></div>
 </header>
 
 <section id="overview">
@@ -104,7 +107,7 @@ table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td
 <div class="mini"><strong>HTTP API</strong>Best for graphics systems, monitoring, polling, configuration discovery, and simple read-only integrations.</div>
 <div class="mini"><strong>WebSocket API</strong>Best for real-time state updates, player controls, production controls, Bitfocus Companion, and automation.</div>
 </div>
-<p>Version 3.4 adds admin-side control of player status, current game, and atomic multi-field player updates, in addition to the existing air-state controls.</p>
+<p>Version 3.5 adds production-health metadata, a per-player panic reset, and an event-wide transient-state reset in addition to the existing admin controls.</p>
 </section>
 
 <section id="base-urls">
@@ -456,6 +459,35 @@ downtime</code></pre>
 <p>Resets the player's status to Normal and clears status timestamps and ASAP acknowledgement. Current game and air state are preserved.</p>
 </section>
 
+
+<section id="admin-panic" class="wsendpoint">
+<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.panic</span></h2>
+<p>Emergency transient-state reset for one player. Requires admin authentication.</p>
+<pre><code>{
+  "type": "admin.player.panic",
+  "data": {
+    "playerId": "alan"
+  }
+}</code></pre>
+<p>Sets the player off-air, returns status to Normal, clears status timers and ASAP acknowledgement, and preserves the player's current game.</p>
+</section>
+
+<section id="admin-event-reset" class="wsendpoint">
+<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.event.reset</span></h2>
+<p>Resets transient production state for the entire event. Requires admin authentication.</p>
+<pre><code>{
+  "type": "admin.event.reset",
+  "data": {}
+}</code></pre>
+<ul>
+<li>Sets every player off-air.</li>
+<li>Returns every status to Normal.</li>
+<li>Clears status timers and ASAP acknowledgements.</li>
+<li>Returns compact monitor mode to <code>priority</code>.</li>
+<li>Preserves current-game selections and live connection state.</li>
+</ul>
+</section>
+
 <section id="admin-compact" class="wsendpoint">
 <h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.compact.mode</span></h2>
 <pre><code>{
@@ -580,12 +612,25 @@ downtime</code></pre>
 <tr><td><code>admin.player.game</code></td><td>Admin</td><td>Set player current game.</td></tr>
 <tr><td><code>admin.player.update</code></td><td>Admin</td><td>Atomically update game/status/air state.</td></tr>
 <tr><td><code>admin.player.clear</code></td><td>Admin</td><td>Clear player request.</td></tr>
+<tr><td><code>admin.player.panic</code></td><td>Admin</td><td>Reset one player to off-air / Normal while preserving current game.</td></tr>
+<tr><td><code>admin.event.reset</code></td><td>Admin</td><td>Reset transient production state for the entire event.</td></tr>
 <tr><td><code>admin.compact.mode</code></td><td>Admin</td><td>Change compact display mode.</td></tr>
 <tr><td><code>state.get</code></td><td>None</td><td>Request current state.</td></tr>
 </tbody></table>
 </section>
 
-<div class="footer">Archipelago Broadcast Control v3.4 — Complete API Reference</div>
+<section id="versioning">
+<h2>Versioning & Change Management</h2>
+<p>This document describes Archipelago Broadcast Control <strong>v3.5</strong>. Version 3.4 adds:</p>
+<ul>
+<li><code>admin.player.status</code></li>
+<li><code>admin.player.game</code></li>
+<li><code>admin.player.update</code></li>
+</ul>
+<p>Existing v3.3 WebSocket commands and HTTP endpoints remain compatible.</p>
+</section>
+
+<div class="footer">Archipelago Broadcast Control v3.5 — Complete API Reference</div>
 </main>
 </div>
 </body>

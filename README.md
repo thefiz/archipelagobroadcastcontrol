@@ -166,7 +166,7 @@ Aliases: `calls -> priority`, `downtime -> bk`. BK currently maps to the existin
 
 ## Read-only lower-third HTTP API
 
-For graphics systems that prefer polling JSON instead of maintaining a WebSocket connection, v3.4 exposes a small read-only lower-third API. Responses use `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
+For graphics systems that prefer polling JSON instead of maintaining a WebSocket connection, v3.5 exposes a small read-only lower-third API. Responses use `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
 
 ### All players
 
@@ -261,7 +261,7 @@ If a player is currently live, `player` contains that player's graphics data. If
 
 No authentication is required because these endpoints are read-only and intentionally omit player tokens, admin credentials, timestamps related to production acknowledgements, and full configuration data.
 
-## v3.4 admin WebSocket player-control commands
+## v3.5 admin WebSocket player-control commands
 
 Version 3.4 expands the authenticated admin WebSocket API so production automation can change a player's game, production status, air state, or several fields atomically.
 
@@ -346,3 +346,84 @@ Failure:
 ```
 
 Every successful player change is persisted and followed by a broadcast `state.snapshot`.
+
+
+## v3.5 production resilience controls
+
+Version 3.5 adds production-health and recovery features intended for event-day operation.
+
+### Dashboard system health
+
+After admin authentication, `/dashboard.html` now shows:
+
+- Application version
+- Server uptime
+- Connected player controls / configured players
+- Current WebSocket client count
+- Currently live player
+- Compact monitor mode
+- Age of the last persisted state write
+- Dashboard WebSocket connection state
+
+If one or more configured player control pages are disconnected, the health panel changes to an `ATTENTION` state.
+
+### Per-player panic reset
+
+Admin WebSocket command:
+
+```json
+{"type":"admin.player.panic","data":{"playerId":"alan"}}
+```
+
+This is an emergency cleanup for one player. It:
+
+- Sets `airState` to `off`
+- Sets `status` to `normal`
+- Clears `statusSetAt`
+- Clears `statusExpiresAt`
+- Clears `asapTakenLiveAt`
+- Preserves `currentGame`
+
+The production dashboard exposes the same action as **Panic reset** on every player card and asks for confirmation before sending it.
+
+### Reset event state
+
+Admin WebSocket command:
+
+```json
+{"type":"admin.event.reset","data":{}}
+```
+
+This resets transient production state for the entire event:
+
+- Every player is set `off` air
+- Every player status returns to `normal`
+- All status timers and ASAP acknowledgements are cleared
+- Compact monitor mode returns to `priority` / Calls
+- Every player's `currentGame` is preserved
+- Player connection state is preserved
+
+The production dashboard exposes the same operation as **Reset Event State** and requires a confirmation before sending it.
+
+### System metadata in state snapshots
+
+`state.snapshot` and `GET /api/state` now include a `system` object:
+
+```json
+{
+  "system": {
+    "version": "3.5",
+    "startedAt": "2026-08-21T22:00:00.000Z",
+    "uptimeSeconds": 120,
+    "configuredPlayers": 12,
+    "connectedPlayers": 12,
+    "websocketClients": 18,
+    "currentLivePlayerId": "alan",
+    "currentLivePlayerName": "Alan",
+    "compactMode": "priority",
+    "lastPersistAt": "2026-08-21T22:01:00.000Z"
+  }
+}
+```
+
+These fields are informational/read-only and are intended for production health displays and diagnostics.
