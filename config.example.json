@@ -1,0 +1,41 @@
+{
+  "eventName": "Archipelago Multiworld",
+  "players": [
+    {
+      "id": "alan",
+      "name": "Alan",
+      "token": "replace-with-a-long-random-token",
+      "games": ["Super Metroid", "Celeste", "TUNIC"],
+      "startingGame": "Super Metroid"
+    },
+    {
+      "id": "jamie",
+      "name": "Jamie",
+      "token": "replace-with-a-different-long-random-token",
+      "games": ["The Legend of Zelda", "Portal 2"],
+      "startingGame": "The Legend of Zelda"
+    }
+  ],
+  "statuses": {
+    "normal": {
+      "label": "Normal",
+      "priority": 0,
+      "expiresSeconds": 0
+    },
+    "soon": {
+      "label": "Interesting Soon",
+      "priority": 2,
+      "expiresSeconds": 120
+    },
+    "asap": {
+      "label": "Please Show Me ASAP",
+      "priority": 3,
+      "expiresSeconds": 60
+    },
+    "downtime": {
+      "label": "Downtime / No Progression",
+      "priority": -1,
+      "expiresSeconds": 600
+    }
+  }
+}

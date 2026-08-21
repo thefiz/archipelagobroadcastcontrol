@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Production Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <h1>Production Dashboard</h1>
+      <p class="muted">Sorted by live state and player-reported priority.</p>
+    </header>
+
+    <section id="login" class="card">
+      <label for="key">Production key</label>
+      <div class="toolbar">
+        <input id="key" type="password" autocomplete="current-password">
+        <button id="loginButton" type="button" class="action" style="min-height:auto">Connect</button>
+      </div>
+      <div id="loginNotice" class="notice" aria-live="polite"></div>
+    </section>
+
+    <section id="modeControls" class="card hidden" style="margin-top:16px">
+      <strong>Compact window mode</strong>
+      <div class="controls">
+        <button type="button" class="small-button compact-mode" data-mode="priority">Calls</button>
+        <button type="button" class="small-button compact-mode" data-mode="normal">Normal</button>
+        <button type="button" class="small-button compact-mode" data-mode="bk">BK</button>
+        <button type="button" class="small-button compact-mode" data-mode="all">All</button>
+      </div>
+    </section>
+    <section id="dashboard" class="grid player-grid hidden" style="margin-top:16px"></section>
+  </main>
+
+  <script type="module" src="/dashboard.js"></script>
+</body>
+</html>

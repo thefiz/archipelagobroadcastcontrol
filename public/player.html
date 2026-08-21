@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Player Broadcast Controls</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <h1 id="title">Player Broadcast Controls</h1>
+      <p class="muted">Change your game when you switch. Use a status only when it helps production.</p>
+    </header>
+
+    <div id="error" class="card hidden"></div>
+
+    <div id="app" class="grid hidden">
+      <section class="card">
+        <label for="game">Current game</label>
+        <select id="game"></select>
+        <div id="gameNotice" class="notice" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>Production status</h2>
+        <div id="statuses" class="status-grid"></div>
+        <div id="statusNotice" class="notice" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>Broadcast indicator</h2>
+        <div id="air" class="air">NOT ON AIR</div>
+        <p class="muted" style="margin-top:12px;margin-bottom:0">
+          “Stand by” means production is preparing your feed. “You’re live” reflects the production state.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="/player.js"></script>
+</body>
+</html>

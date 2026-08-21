@@ -1,0 +1,17 @@
+{
+  "name": "archipelago-broadcast-control",
+  "version": "0.3.4",
+  "private": true,
+  "description": "Lightweight player status, current-game, multiview, and on-air coordination system using plain WebSocket.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
