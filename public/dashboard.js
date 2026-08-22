@@ -12,6 +12,7 @@ const healthSummary = document.querySelector("#healthSummary");
 const healthBadge = document.querySelector("#healthBadge");
 const controlNotice = document.querySelector("#controlNotice");
 const resetEventButton = document.querySelector("#resetEvent");
+const serverAlert = document.querySelector("#serverAlert");
 
 let authenticated = false;
 let adminKey = "";
@@ -21,6 +22,8 @@ let websocketConnected = false;
 const socket = new BroadcastSocket({
   onOpen: async () => {
     websocketConnected = true;
+    serverAlert.classList.add("hidden");
+    document.body.classList.remove("server-unreachable");
     if (!authenticated || !adminKey) return;
     const result = await socket.request("auth.admin", { key: adminKey });
     if (!result.ok) {
@@ -36,6 +39,8 @@ const socket = new BroadcastSocket({
   },
   onClose: () => {
     websocketConnected = false;
+    serverAlert.classList.remove("hidden");
+    document.body.classList.add("server-unreachable");
     renderHealth(latestSnapshot);
   },
   onMessage: (message) => {
@@ -95,8 +100,8 @@ function renderHealth(snapshot) {
   document.querySelector("#healthConnection").textContent = websocketConnected ? "CONNECTED" : "DISCONNECTED";
 
   const healthy = websocketConnected && connected === configured;
-  healthBadge.textContent = healthy ? "OK" : "ATTENTION";
-  healthBadge.className = `badge ${healthy ? "health-ok" : "health-warning"}`;
+  healthBadge.textContent = !websocketConnected ? "SERVER OFFLINE" : healthy ? "OK" : "ATTENTION";
+  healthBadge.className = `badge ${!websocketConnected ? "health-critical" : healthy ? "health-ok" : "health-warning"}`;
   healthSummary.textContent = !websocketConnected
     ? "Dashboard WebSocket is disconnected. Automatic reconnect is active."
     : connected === configured
@@ -112,7 +117,7 @@ function render(snapshot) {
   dashboard.replaceChildren();
   for (const player of sortPlayers(snapshot.players)) {
     const card = document.createElement("article");
-    card.className = `card player-card ${priorityClass(player.statusDefinition.priority)}`;
+    card.className = `card player-card ${priorityClass(player.statusDefinition.priority)}${player.connected ? "" : " disconnected"}`;
 
     const top = document.createElement("div");
     top.className = "card-top";
@@ -126,13 +131,24 @@ function render(snapshot) {
     game.className = "muted";
     identity.append(heading, game);
 
+    const badges = document.createElement("div");
+    badges.className = "player-badges";
+
+    if (!player.connected) {
+      const disconnected = document.createElement("span");
+      disconnected.className = "badge disconnected-badge";
+      disconnected.textContent = "DISCONNECTED";
+      badges.append(disconnected);
+    }
+
     const status = document.createElement("span");
     status.className = `badge ${statusClass(player.status)}`;
     status.textContent = player.statusDefinition.label;
-    top.append(identity, status);
+    badges.append(status);
+    top.append(identity, badges);
 
     const details = document.createElement("p");
-    details.className = "muted";
+    details.className = player.connected ? "muted" : "offline-detail";
     details.style.margin = "12px 0 0";
     details.textContent = [
       player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
