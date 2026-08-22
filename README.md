@@ -50,7 +50,7 @@ The full production view provides system health, event controls, player status, 
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Create the event configuration:
@@ -90,8 +90,6 @@ Other systems on the network should use the server's LAN address, for example `h
 
 ## Configuration
 
-`config.example.json` contains the configuration structure and should be copied to `config.json` for an event.
-
 ```json
 {
   "id": "alan",
@@ -101,8 +99,6 @@ Other systems on the network should use the server's LAN address, for example `h
   "startingGame": "Super Metroid"
 }
 ```
-
-`config.json` is excluded from Git and should remain private because it contains player authentication tokens.
 
 ## Interfaces
 
@@ -118,36 +114,14 @@ The server also exposes read-only HTTP endpoints for graphics and monitoring, pl
 
 ## Documentation
 
-- [Complete API Reference](docs/api-reference.html)
-- [Application Pages Reference](docs/application-pages.html)
-
-## Event Deployment
-
-For live production, use a tested tagged release rather than deploying directly from the development branch.
-
-Before the event:
-
-- Give the server a static IP or DHCP reservation.
-- Prefer wired networking for the server and production systems.
-- Keep a known-good backup of `config.json`.
-- Have a second computer capable of running the release.
-- Test player connectivity, production controls, Companion, and graphics on the actual event network.
-
-The coordination system is intentionally non-critical to the video path: if it becomes unavailable, production can continue switching gameplay manually.
+- [Complete API Reference](https://thefiz.github.io/archipelagobroadcastcontrol/api-reference.html)
+- [Application Pages Reference](https://thefiz.github.io/archipelagobroadcastcontrol/application-pages.html)
 
 ## Security
 
 The default deployment model assumes a trusted production LAN. Read-only state and graphics endpoints are unauthenticated; state-changing player and admin commands require WebSocket authentication.
 
 Player-page URLs contain authentication tokens and should be treated as credentials. Additional hardening is recommended before exposing the server to the public internet.
-
-## Development
-
-```bash
-npm run dev
-```
-
-Development mode uses Node's watch mode.
 
 ## License
 
