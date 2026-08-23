@@ -2,27 +2,19 @@
 
 A lightweight production-coordination system for large [Archipelago](https://archipelago.gg/) multiworld broadcasts.
 
-Players use a simple browser interface to report their current game and whether production should prioritize their feed. The broadcast team gets a real-time dashboard, compact call monitor, air-state feedback, lower-third data, and a WebSocket API for automation.
-
-The application is designed for a trusted local production network and intentionally stays outside the video signal path.
+Players use a browser interface to report their current game and production priority. The broadcast team receives real-time player status, air-state feedback, compact monitoring, graphics data, and automation controls. The application runs independently of the video signal path.
 
 ## Screenshots
 
 ### Player Controls
 
-Players select their current game, set their production status, and receive standby/live feedback.
-
 ![Player controls](docs/images/player-controls.png)
 
 ### Compact Monitor
 
-A 640×360 distance-readable priority monitor designed for a production multiview.
-
 ![Compact production monitor](docs/images/compact-monitor.png)
 
 ### Production Dashboard
-
-The full production view provides system health, event controls, player status, and air-state controls.
 
 ![Production dashboard](docs/images/production-dashboard.png)
 
@@ -31,23 +23,32 @@ The full production view provides system health, event controls, player status, 
 - Player-selectable current game
 - Normal, Soon, ASAP, and Downtime / No Progression statuses
 - Automatic status expiration
-- Stand By / Live / Off Air feedback to players
-- Production dashboard and 640×360 compact call monitor
-- Per-player and event-wide recovery controls
+- Stand By, Live, and Off Air feedback to players
+- Production dashboard with connection and system-health monitoring
+- 640×360 compact production call monitor
+- Per-player panic reset and event-state reset
 - HTTP lower-third API and JSON WebSocket API
-- Bitfocus Companion-compatible control
-- Persistent state across server restarts
-- Production health and connection monitoring
+- Bitfocus Companion-compatible production control
+- Persistent runtime state across server restarts
 
-## Requirements
+## Installation
 
-- Node.js 18 or newer
-- npm
-- Network connectivity between the server, player stations, and production systems
+### Windows Portable Release
 
-## Quick Start
+Download the Windows x64 portable package from the repository's **Releases** page and extract it.
 
-Install dependencies:
+The portable release includes the Node.js runtime and application dependencies. Node.js, npm, and Git do not need to be installed on the event computer.
+
+1. Copy `config.example.json` to `config.json`.
+2. Edit `config.json` with the event roster, game assignments, and player tokens.
+3. Run `start-event.cmd`.
+4. Enter the production admin key when prompted.
+
+The launcher starts the server and opens the production dashboard.
+
+### Running from Source
+
+Node.js 18 or newer is required.
 
 ```bash
 npm ci
@@ -56,49 +57,55 @@ npm ci
 Create the event configuration:
 
 **Windows PowerShell**
+
 ```powershell
 Copy-Item config.example.json config.json
 ```
 
 **macOS / Linux**
+
 ```bash
 cp config.example.json config.json
 ```
 
-Edit `config.json` with the player roster, assigned games, starting games, and unique player tokens.
-
-Set the production admin key and start the server:
+Set the admin key and start the server:
 
 **Windows PowerShell**
+
 ```powershell
 $env:ADMIN_KEY="your-production-key"
 npm start
 ```
 
 **macOS / Linux**
+
 ```bash
 ADMIN_KEY="your-production-key" npm start
 ```
 
-Then open:
+The server listens on port `3000` by default. The production dashboard is available at:
 
 ```text
 http://localhost:3000/dashboard.html
 ```
 
-Other systems on the network should use the server's LAN address, for example `http://192.168.1.50:3000/`.
-
 ## Configuration
+
+`config.json` defines the player roster, game assignments, player tokens, status labels, priorities, and expiration times.
+
+A template is provided in `config.example.json`.
 
 ```json
 {
-  "id": "alan",
-  "name": "Alan",
+  "id": "john",
+  "name": "John",
   "token": "replace-with-a-long-random-token",
   "games": ["Super Metroid", "Celeste", "TUNIC"],
   "startingGame": "Super Metroid"
 }
 ```
+
+`config.json` is excluded from Git because it may contain player authentication tokens.
 
 ## Interfaces
 
@@ -110,19 +117,39 @@ Other systems on the network should use the server's LAN address, for example `h
 | `/multiview.html` | Status-aware multiview |
 | `/overlay.html?id=PLAYER_ID&status=0` | Transparent player/game overlay |
 
-The server also exposes read-only HTTP endpoints for graphics and monitoring, plus a standard JSON WebSocket API for real-time integrations and production control.
+The server also provides read-only HTTP endpoints for graphics and monitoring and a JSON WebSocket API for real-time integrations and production control.
 
 ## Documentation
 
-- [Complete API Reference](https://thefiz.github.io/archipelagobroadcastcontrol/api-reference.html)
-- [Application Pages Reference](https://thefiz.github.io/archipelagobroadcastcontrol/application-pages.html)
+- [Complete API Reference](docs/api-reference.html)
+- [Application Pages Reference](docs/application-pages.html)
 
 ## Security
 
-The default deployment model assumes a trusted production LAN. Read-only state and graphics endpoints are unauthenticated; state-changing player and admin commands require WebSocket authentication.
+The application is designed for use on a trusted production network and is not configured for direct public-internet exposure.
 
-Player-page URLs contain authentication tokens and should be treated as credentials. Additional hardening is recommended before exposing the server to the public internet.
+Read-only state and graphics endpoints are unauthenticated. State-changing player and admin WebSocket commands require authentication.
+
+Player-page URLs contain authentication tokens and should be treated as credentials.
+
+## Development
+
+Run the automated tests:
+
+```bash
+npm test
+```
+
+Start the server in Node watch mode:
+
+```bash
+npm run dev
+```
+
+GitHub Actions runs the test suite and syntax checks on pushes and pull requests.
 
 ## License
 
-See [LICENSE](LICENSE) for licensing terms.
+Archipelago Broadcast Control is licensed under the GNU General Public License v3.0.
+
+See [LICENSE](LICENSE) for the full license text.
