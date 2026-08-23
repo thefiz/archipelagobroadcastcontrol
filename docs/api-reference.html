@@ -106,7 +106,6 @@ table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td
 <div class="mini"><strong>HTTP API</strong>Best for graphics systems, monitoring, polling, configuration discovery, and simple read-only integrations.</div>
 <div class="mini"><strong>WebSocket API</strong>Best for real-time state updates, player controls, production controls, Bitfocus Companion, and automation.</div>
 </div>
-<p>Version 3.5 adds production-health metadata, a per-player panic reset, and an event-wide transient-state reset in addition to the existing admin controls.</p>
 </section>
 
 <section id="base-urls">
@@ -133,8 +132,8 @@ WebSocket: ws://192.168.1.50:3000/ws</code></pre>
 <h2>Core Data Models</h2>
 <h3>Full Player State</h3>
 <pre><code>{
-  "id": "alan",
-  "name": "Alan",
+  "id": "john",
+  "name": "John",
   "currentGame": "Super Metroid",
   "status": "asap",
   "statusSetAt": "2026-08-21T22:00:00.000Z",
@@ -182,8 +181,8 @@ Cache-Control: no-store</code></pre>
   },
   "players": [
     {
-      "id": "alan",
-      "name": "Alan",
+      "id": "john",
+      "name": "John",
       "games": ["Super Metroid","Celeste"],
       "startingGame": "Super Metroid"
     }
@@ -201,8 +200,8 @@ Cache-Control: no-store</code></pre>
   "compactMode": "priority",
   "players": [
     {
-      "id": "alan",
-      "name": "Alan",
+      "id": "john",
+      "name": "John",
       "currentGame": "Super Metroid",
       "status": "asap",
       "statusSetAt": "2026-08-21T21:59:50.000Z",
@@ -229,9 +228,9 @@ Cache-Control: no-store</code></pre>
   "eventName": "Archipelago Multiworld",
   "generatedAt": "2026-08-21T22:00:00.000Z",
   "players": {
-    "alan": {
-      "id": "alan",
-      "name": "Alan",
+    "john": {
+      "id": "john",
+      "name": "John",
       "game": "Super Metroid",
       "currentGame": "Super Metroid",
       "airState": "live",
@@ -292,7 +291,7 @@ Cache-Control: no-store</code></pre>
 <pre><code>{
   "type": "auth.player",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "token": "PLAYER_TOKEN"
   }
 }</code></pre>
@@ -335,7 +334,7 @@ Cache-Control: no-store</code></pre>
 <pre><code>{
   "type": "admin.player.air",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "airState": "live"
   }
 }</code></pre>
@@ -353,7 +352,7 @@ Cache-Control: no-store</code></pre>
 <pre><code>{
   "type": "admin.player.status",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "status": "soon"
   }
 }</code></pre>
@@ -379,7 +378,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.game",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "game": "Celeste"
   }
 }</code></pre>
@@ -403,7 +402,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.update",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "currentGame": "Super Metroid",
     "status": "asap",
     "airState": "standby"
@@ -428,7 +427,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.update",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "currentGame": "TUNIC",
     "status": "asap"
   }
@@ -438,7 +437,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.update",
   "data": {
-    "playerId": "alan",
+    "playerId": "john",
     "status": "soon",
     "airState": "standby"
   }
@@ -452,7 +451,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.clear",
   "data": {
-    "playerId": "alan"
+    "playerId": "john"
   }
 }</code></pre>
 <p>Resets the player's status to Normal and clears status timestamps and ASAP acknowledgement. Current game and air state are preserved.</p>
@@ -465,7 +464,7 @@ downtime</code></pre>
 <pre><code>{
   "type": "admin.player.panic",
   "data": {
-    "playerId": "alan"
+    "playerId": "john"
   }
 }</code></pre>
 <p>Sets the player off-air, returns status to Normal, clears status timers and ASAP acknowledgement, and preserves the player's current game.</p>
@@ -574,12 +573,12 @@ downtime</code></pre>
 <pre><code>{"type":"auth.admin","data":{"key":"YOUR_ADMIN_KEY"}}</code></pre>
 <h3>Example Production Messages</h3>
 <table><thead><tr><th>Action</th><th>Message</th></tr></thead><tbody>
-<tr><td>Set player Soon</td><td><code>{"type":"admin.player.status","data":{"playerId":"alan","status":"soon"}}</code></td></tr>
-<tr><td>Set player ASAP</td><td><code>{"type":"admin.player.status","data":{"playerId":"alan","status":"asap"}}</code></td></tr>
-<tr><td>Change game</td><td><code>{"type":"admin.player.game","data":{"playerId":"alan","game":"TUNIC"}}</code></td></tr>
-<tr><td>Standby player</td><td><code>{"type":"admin.player.air","data":{"playerId":"alan","airState":"standby"}}</code></td></tr>
-<tr><td>Take player live</td><td><code>{"type":"admin.player.air","data":{"playerId":"alan","airState":"live"}}</code></td></tr>
-<tr><td>Atomic update</td><td><code>{"type":"admin.player.update","data":{"playerId":"alan","currentGame":"TUNIC","status":"asap","airState":"standby"}}</code></td></tr>
+<tr><td>Set player Soon</td><td><code>{"type":"admin.player.status","data":{"playerId":"john","status":"soon"}}</code></td></tr>
+<tr><td>Set player ASAP</td><td><code>{"type":"admin.player.status","data":{"playerId":"john","status":"asap"}}</code></td></tr>
+<tr><td>Change game</td><td><code>{"type":"admin.player.game","data":{"playerId":"john","game":"TUNIC"}}</code></td></tr>
+<tr><td>Standby player</td><td><code>{"type":"admin.player.air","data":{"playerId":"john","airState":"standby"}}</code></td></tr>
+<tr><td>Take player live</td><td><code>{"type":"admin.player.air","data":{"playerId":"john","airState":"live"}}</code></td></tr>
+<tr><td>Atomic update</td><td><code>{"type":"admin.player.update","data":{"playerId":"john","currentGame":"TUNIC","status":"asap","airState":"standby"}}</code></td></tr>
 </tbody></table>
 </section>
 
