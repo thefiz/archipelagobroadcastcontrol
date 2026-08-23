@@ -132,22 +132,6 @@ Read-only state and graphics endpoints are unauthenticated. State-changing playe
 
 Player-page URLs contain authentication tokens and should be treated as credentials.
 
-## Development
-
-Run the automated tests:
-
-```bash
-npm test
-```
-
-Start the server in Node watch mode:
-
-```bash
-npm run dev
-```
-
-GitHub Actions runs the test suite and syntax checks on pushes and pull requests.
-
 ## License
 
 Archipelago Broadcast Control is licensed under the GNU General Public License v3.0.
