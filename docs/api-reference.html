@@ -3,134 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Archipelago Broadcast Control — Complete API Reference v3.6</title>
+<title>Archipelago Broadcast Control — API Reference v3.6</title>
 <style>
-:root{
-  --bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;
-  --accent:#2457d6;--accent-soft:#eaf0ff;--code-bg:#0f172a;--code-text:#e5eefc;
-  --good:#0f766e;--warn:#9a6700;--purple:#6d4aff;--red:#b42318;
-  --shadow:0 8px 24px rgba(20,32,56,.08);--radius:14px
-}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.page{max-width:1240px;margin:0 auto;padding:32px 24px 64px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px}
-.sidebar{position:sticky;top:18px;align-self:start;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;max-height:calc(100vh - 36px);overflow:auto}
-.sidebar h2{font-size:12px;text-transform:uppercase;letter-spacing:.11em;margin:14px 0 7px;color:var(--muted)}
-.sidebar h2:first-child{margin-top:0}.sidebar ul{list-style:none;padding:0;margin:0}.sidebar li{margin:2px 0}
-.sidebar a{display:block;padding:5px 8px;border-radius:7px;color:var(--text);font-size:13px}.sidebar a:hover{background:var(--accent-soft);text-decoration:none}
-main{min-width:0}.hero{background:linear-gradient(135deg,#0f172a,#1f3b7a);color:white;border-radius:18px;padding:36px;box-shadow:var(--shadow);margin-bottom:24px}
-.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.1em;opacity:.75;margin-bottom:8px}
-h1{margin:0 0 10px;font-size:clamp(32px,4vw,48px);line-height:1.06}.subtitle{margin:0;color:#d6e3ff;font-size:18px;max-width:800px}
-.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:13px;font-weight:700}
-section{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin:0 0 22px}
-h2{margin:0 0 14px;font-size:26px;line-height:1.2}h3{margin:24px 0 10px;font-size:19px}h4{margin:18px 0 7px;font-size:16px}
-p{margin:10px 0}.lead{font-size:17px;color:var(--muted)}
-.endpoint{border-left:5px solid var(--accent)}.wsendpoint{border-left:5px solid var(--purple)}
-.method,.ws-tag,.server-tag{display:inline-block;font-weight:800;font-size:12px;padding:5px 8px;border-radius:7px;margin-right:8px;vertical-align:middle}
-.method{background:#dff5ef;color:var(--good)}.ws-tag{background:#eee9ff;color:#5638c8}.server-tag{background:#ffe7e5;color:var(--red)}
-.path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:19px;font-weight:700}
-pre{background:var(--code-bg);color:var(--code-text);border-radius:12px;padding:16px 18px;overflow:auto;border:1px solid #263247;font-size:13.5px;line-height:1.5;white-space:pre}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}p code,li code,td code{background:#eef2f7;color:#24324b;padding:2px 5px;border-radius:5px;font-size:.94em}
-table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:#f0f4f8;font-weight:800}
-.callout{background:var(--accent-soft);border:1px solid #ccd9ff;border-radius:12px;padding:14px 16px;margin:14px 0}
-.note{border-left:4px solid var(--warn);padding:10px 14px;background:#fff9e8;border-radius:8px}.muted{color:var(--muted)}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.mini{border:1px solid var(--border);border-radius:11px;padding:14px;background:#fbfcfe}.mini strong{display:block;margin-bottom:4px}
-.footer{color:var(--muted);font-size:13px;text-align:center;padding:12px 0 0}
-@media(max-width:920px){.page{grid-template-columns:1fr}.sidebar{position:relative;top:auto;max-height:none}.grid2{grid-template-columns:1fr}}
-@media print{body{background:white}.page{display:block;max-width:none;padding:0}.sidebar{display:none}.hero,section{box-shadow:none}.hero{border:1px solid #ccc}section{break-inside:avoid}pre{white-space:pre-wrap;word-break:break-word}a{color:inherit;text-decoration:none}}
+:root{--bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;--accent:#2457d6;--code:#0f172a;--code-text:#e5eefc;--purple:#6d4aff;--green:#0f766e}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+.wrap{max-width:1050px;margin:auto;padding:32px 24px 60px}header{margin-bottom:30px}h1{margin:0 0 8px;font-size:38px}h2{margin:34px 0 12px;border-bottom:1px solid var(--border);padding-bottom:7px}h3{margin:24px 0 8px}
+p{margin:8px 0 12px}.muted{color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}p code,li code,td code{background:#edf1f6;padding:2px 5px;border-radius:4px}
+pre{background:var(--code);color:var(--code-text);padding:15px 17px;border-radius:8px;overflow:auto;line-height:1.45}
+table{width:100%;border-collapse:collapse;margin:12px 0 22px;font-size:14px}th,td{border:1px solid var(--border);padding:9px 11px;text-align:left;vertical-align:top}th{background:#eef2f6}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:5px;padding:3px 6px;margin-right:6px}.get{background:#dff5ef;color:var(--green)}.ws{background:#eee9ff;color:#5638c8}
+.note{border-left:3px solid var(--accent);padding:9px 12px;background:#eef3ff;margin:14px 0}.toc{columns:2;padding-left:20px}.toc li{margin:4px 0}
+a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 </style>
 </head>
-<body>
-<div class="page">
-<nav class="sidebar" aria-label="Table of contents">
-<h2>Introduction</h2>
-<ul>
-<li><a href="#overview">Overview</a></li><li><a href="#base-urls">Base URLs</a></li><li><a href="#auth-overview">Authentication</a></li><li><a href="#models">Core Data Models</a></li>
-</ul>
-<h2>HTTP API</h2>
-<ul>
-<li><a href="#http-behavior">HTTP Behavior</a></li>
-<li><a href="#config">GET /api/config</a></li>
-<li><a href="#state">GET /api/state</a></li>
-<li><a href="#lower-thirds">GET /api/lower-thirds</a></li>
-<li><a href="#lower-third-live">GET /api/lower-thirds/live</a></li>
-<li><a href="#lower-third-player">GET /api/lower-thirds/{playerId}</a></li>
-<li><a href="#health">GET /health</a></li>
-</ul>
-<h2>WebSocket API</h2>
-<ul>
-<li><a href="#ws-overview">Protocol & Envelope</a></li>
-<li><a href="#auth-player">auth.player</a></li>
-<li><a href="#auth-admin">auth.admin</a></li>
-<li><a href="#player-game">player.game</a></li>
-<li><a href="#player-status">player.status</a></li>
-<li><a href="#admin-air">admin.player.air</a></li>
-<li><a href="#admin-status">admin.player.status</a></li>
-<li><a href="#admin-game">admin.player.game</a></li>
-<li><a href="#admin-update">admin.player.update</a></li>
-<li><a href="#admin-clear">admin.player.clear</a></li>
-<li><a href="#admin-panic">admin.player.panic</a></li>
-<li><a href="#admin-event-reset">admin.event.reset</a></li>
-<li><a href="#admin-compact">admin.compact.mode</a></li>
-<li><a href="#state-get">state.get</a></li>
-</ul>
-<h2>Server Events</h2>
-<ul>
-<li><a href="#event-snapshot">state.snapshot</a></li>
-<li><a href="#event-compact">compact.mode</a></li>
-<li><a href="#event-ack">ack</a></li>
-<li><a href="#ws-errors">Errors & Validation</a></li>
-<li><a href="#heartbeat">Heartbeat & Reconnects</a></li>
-</ul>
-<h2>Integration</h2>
-<ul>
-<li><a href="#companion">Bitfocus Companion</a></li>
-<li><a href="#graphics">Graphics Integration</a></li>
-<li><a href="#quick-reference">Quick Reference</a></li>
-</ul>
-</nav>
-
-<main>
-<header class="hero">
-<div class="eyebrow">Archipelago Broadcast Control</div>
-<h1>Complete API Reference</h1>
-<p class="subtitle">HTTP and WebSocket interfaces for player state, lower thirds, production control, compact monitor modes, and broadcast automation.</p>
-<div class="meta"><span class="pill">Server Version: v3.6</span><span class="pill">HTTP / JSON</span><span class="pill">Standard WebSocket / JSON</span></div>
+<body><main class="wrap">
+<header>
+<h1>API Reference</h1>
+<p class="muted">Archipelago Broadcast Control v3.6</p>
+<p>HTTP endpoints provide read-only state and graphics data. The WebSocket interface provides real-time state and production control.</p>
 </header>
 
-<section id="overview">
-<h2>Overview</h2>
-<p class="lead">Archipelago Broadcast Control exposes a read-only HTTP API and a bidirectional WebSocket API.</p>
-<div class="grid2">
-<div class="mini"><strong>HTTP API</strong>Best for graphics systems, monitoring, polling, configuration discovery, and simple read-only integrations.</div>
-<div class="mini"><strong>WebSocket API</strong>Best for real-time state updates, player controls, production controls, Bitfocus Companion, and automation.</div>
-</div>
-</section>
+<h2>Contents</h2>
+<ul class="toc">
+<li><a href="#connection">Connection & authentication</a></li>
+<li><a href="#models">State model</a></li>
+<li><a href="#http">HTTP endpoints</a></li>
+<li><a href="#websocket">WebSocket messages</a></li>
+<li><a href="#behavior">Important behavior</a></li>
+<li><a href="#events">Server messages</a></li>
+<li><a href="#errors">Errors</a></li>
+<li><a href="#companion">Bitfocus Companion</a></li>
+<li><a href="#graphics">Graphics</a></li>
+</ul>
 
-<section id="base-urls">
-<h2>Base URLs</h2>
-<h3>HTTP</h3><pre><code>http://SERVER-IP:3000</code></pre>
-<h3>WebSocket</h3><pre><code>ws://SERVER-IP:3000/ws</code></pre>
-<p>Example:</p>
-<pre><code>HTTP:      http://192.168.1.50:3000
-WebSocket: ws://192.168.1.50:3000/ws</code></pre>
-</section>
+<section id="connection">
+<h2>Connection & authentication</h2>
+<table>
+<tr><th>Interface</th><th>Address</th><th>Authentication</th></tr>
+<tr><td>HTTP</td><td><code>http://SERVER-IP:3000</code></td><td>None for documented read-only endpoints</td></tr>
+<tr><td>WebSocket</td><td><code>ws://SERVER-IP:3000/ws</code></td><td>Depends on message type</td></tr>
+</table>
+<p>WebSocket authentication is connection-scoped. A reconnect must authenticate again before sending protected messages.</p>
 
-<section id="auth-overview">
-<h2>Authentication</h2>
-<table><thead><tr><th>Interface</th><th>Authentication</th></tr></thead><tbody>
-<tr><td>Read-only HTTP endpoints</td><td>None</td></tr>
-<tr><td>WebSocket state subscription / <code>state.get</code></td><td>None</td></tr>
-<tr><td>Player WebSocket commands</td><td><code>auth.player</code> on the same connection</td></tr>
-<tr><td>Production/admin WebSocket commands</td><td><code>auth.admin</code> on the same connection</td></tr>
-</tbody></table>
-<div class="note"><strong>Connection scoped:</strong> WebSocket authentication lasts only for the current connection. Reconnects must authenticate again.</div>
+<h3>Player authentication</h3>
+<pre><code>{"type":"auth.player","data":{"playerId":"john","token":"PLAYER_TOKEN"}}</code></pre>
+
+<h3>Admin authentication</h3>
+<pre><code>{"type":"auth.admin","data":{"key":"YOUR_ADMIN_KEY"}}</code></pre>
 </section>
 
 <section id="models">
-<h2>Core Data Models</h2>
-<h3>Full Player State</h3>
+<h2>State model</h2>
+<p>The main state snapshot contains the event name, compact-monitor mode, generation time, and current state for each player.</p>
 <pre><code>{
   "id": "john",
   "name": "John",
@@ -149,381 +73,109 @@ WebSocket: ws://192.168.1.50:3000/ws</code></pre>
     "expiresSeconds": 60
   }
 }</code></pre>
-<h3>Important Enumerations</h3>
-<table><thead><tr><th>Field</th><th>Values</th></tr></thead><tbody>
+<table>
+<tr><th>Field</th><th>Values</th></tr>
 <tr><td><code>status</code></td><td><code>normal</code>, <code>soon</code>, <code>asap</code>, <code>downtime</code></td></tr>
 <tr><td><code>airState</code></td><td><code>off</code>, <code>standby</code>, <code>live</code></td></tr>
 <tr><td><code>compactMode</code></td><td><code>priority</code>, <code>normal</code>, <code>bk</code>, <code>all</code></td></tr>
-</tbody></table>
+</table>
 </section>
 
-<section id="http-behavior">
-<h2>HTTP API Behavior</h2>
-<p>API endpoints accept <code>GET</code> and <code>HEAD</code>. Other HTTP methods return <code>405 Method Not Allowed</code> with <code>Allow: GET, HEAD</code>.</p>
-<p>JSON responses include:</p>
-<pre><code>Content-Type: application/json; charset=utf-8
-Cache-Control: no-store</code></pre>
-<p>Lower-third endpoints additionally include:</p>
-<pre><code>Access-Control-Allow-Origin: *</code></pre>
-</section>
+<section id="http">
+<h2>HTTP endpoints</h2>
+<p>These endpoints accept <code>GET</code> and <code>HEAD</code>. JSON responses use <code>Cache-Control: no-store</code>. Lower-third endpoints also allow cross-origin reads.</p>
+<table>
+<tr><th>Endpoint</th><th>Response</th></tr>
+<tr><td><span class="tag get">GET</span><code>/api/config</code></td><td>Public event configuration, with player tokens removed.</td></tr>
+<tr><td><span class="tag get">GET</span><code>/api/state</code></td><td>Complete current production state.</td></tr>
+<tr><td><span class="tag get">GET</span><code>/api/lower-thirds</code></td><td>Graphics-friendly data for all configured players.</td></tr>
+<tr><td><span class="tag get">GET</span><code>/api/lower-thirds/live</code></td><td>The current live player, or <code>player: null</code>.</td></tr>
+<tr><td><span class="tag get">GET</span><code>/api/lower-thirds/{playerId}</code></td><td>Graphics-friendly data for one player. Unknown IDs return 404.</td></tr>
+<tr><td><span class="tag get">GET</span><code>/health</code></td><td>Basic health/discovery data including player count and WebSocket path.</td></tr>
+</table>
 
-<section id="config" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/api/config</span></h2>
-<p>Returns public event configuration. Player authentication tokens are removed.</p>
-<h3>Example Response</h3>
+<h3>Lower-third player shape</h3>
 <pre><code>{
-  "eventName": "Archipelago Multiworld",
-  "statuses": {
-    "normal": {"label":"Normal","priority":0,"expiresSeconds":0},
-    "soon": {"label":"Interesting Soon","priority":2,"expiresSeconds":120},
-    "asap": {"label":"Please Show Me ASAP","priority":3,"expiresSeconds":60},
-    "downtime": {"label":"Downtime / No Progression","priority":-1,"expiresSeconds":600}
-  },
-  "players": [
-    {
-      "id": "john",
-      "name": "John",
-      "games": ["Super Metroid","Celeste"],
-      "startingGame": "Super Metroid"
-    }
-  ]
+  "id": "john",
+  "name": "John",
+  "game": "Super Metroid",
+  "currentGame": "Super Metroid",
+  "airState": "live",
+  "live": true,
+  "status": "asap",
+  "connected": true
 }</code></pre>
 </section>
 
-<section id="state" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/api/state</span></h2>
-<p>Returns the complete current production state.</p>
-<h3>Example Response</h3>
-<pre><code>{
-  "eventName": "Archipelago Multiworld",
-  "generatedAt": "2026-08-21T22:00:00.000Z",
-  "compactMode": "priority",
-  "players": [
-    {
-      "id": "john",
-      "name": "John",
-      "currentGame": "Super Metroid",
-      "status": "asap",
-      "statusSetAt": "2026-08-21T21:59:50.000Z",
-      "statusExpiresAt": "2026-08-21T22:00:50.000Z",
-      "asapTakenLiveAt": null,
-      "airState": "standby",
-      "updatedAt": "2026-08-21T21:59:50.000Z",
-      "connected": true,
-      "games": ["Super Metroid","Celeste"],
-      "statusDefinition": {
-        "label": "Please Show Me ASAP",
-        "priority": 3,
-        "expiresSeconds": 60
-      }
-    }
-  ]
-}</code></pre>
-</section>
-
-<section id="lower-thirds" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/api/lower-thirds</span></h2>
-<p>Returns graphics-friendly data for all configured players.</p>
-<pre><code>{
-  "eventName": "Archipelago Multiworld",
-  "generatedAt": "2026-08-21T22:00:00.000Z",
-  "players": {
-    "john": {
-      "id": "john",
-      "name": "John",
-      "game": "Super Metroid",
-      "currentGame": "Super Metroid",
-      "airState": "live",
-      "live": true,
-      "status": "asap",
-      "connected": true
-    }
-  }
-}</code></pre>
-</section>
-
-<section id="lower-third-live" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/api/lower-thirds/live</span></h2>
-<p>Returns the player currently marked live, or <code>player: null</code> when nobody is live.</p>
-</section>
-
-<section id="lower-third-player" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/api/lower-thirds/{playerId}</span></h2>
-<p>Returns graphics-friendly data for one configured player.</p>
-<h3>Unknown Player — 404</h3>
-<pre><code>{
-  "ok": false,
-  "error": "Unknown player."
-}</code></pre>
-</section>
-
-<section id="health" class="endpoint">
-<h2><span class="method">GET</span><span class="path">/health</span></h2>
-<p>Lightweight health/discovery endpoint.</p>
-<pre><code>{
-  "ok": true,
-  "players": 12,
-  "websocketPath": "/ws"
-}</code></pre>
-</section>
-
-<section id="ws-overview">
-<h2>WebSocket Protocol</h2>
-<p>Connect to:</p><pre><code>ws://SERVER-IP:3000/ws</code></pre>
-<h3>Client Request Envelope</h3>
+<section id="websocket">
+<h2>WebSocket messages</h2>
+<p>Client messages use this envelope:</p>
 <pre><code>{
   "type": "message.type",
   "requestId": "optional-client-id",
   "data": {}
 }</code></pre>
-<h3>Acknowledgement Envelope</h3>
-<pre><code>{
-  "type": "ack",
-  "requestId": "optional-client-id",
-  "data": {
-    "ok": true
-  }
-}</code></pre>
-</section>
 
-<section id="auth-player" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">auth.player</span></h2>
-<pre><code>{
-  "type": "auth.player",
-  "data": {
-    "playerId": "john",
-    "token": "PLAYER_TOKEN"
-  }
-}</code></pre>
-</section>
+<table>
+<tr><th>Type</th><th>Auth</th><th>Data</th><th>Purpose</th></tr>
+<tr><td><code>auth.player</code></td><td>None</td><td><code>playerId</code>, <code>token</code></td><td>Authenticate the connection as a player.</td></tr>
+<tr><td><code>auth.admin</code></td><td>None</td><td><code>key</code></td><td>Authenticate the connection for production/admin commands.</td></tr>
+<tr><td><code>player.game</code></td><td>Player</td><td><code>game</code></td><td>Change the authenticated player's current game.</td></tr>
+<tr><td><code>player.status</code></td><td>Player</td><td><code>status</code></td><td>Change the authenticated player's production status.</td></tr>
+<tr><td><code>admin.player.air</code></td><td>Admin</td><td><code>playerId</code>, <code>airState</code></td><td>Set a player's air state.</td></tr>
+<tr><td><code>admin.player.status</code></td><td>Admin</td><td><code>playerId</code>, <code>status</code></td><td>Set a player's production status.</td></tr>
+<tr><td><code>admin.player.game</code></td><td>Admin</td><td><code>playerId</code>, <code>game</code></td><td>Change a player's current game.</td></tr>
+<tr><td><code>admin.player.update</code></td><td>Admin</td><td><code>playerId</code> plus any of <code>currentGame</code>, <code>status</code>, <code>airState</code></td><td>Apply several player changes atomically.</td></tr>
+<tr><td><code>admin.player.clear</code></td><td>Admin</td><td><code>playerId</code></td><td>Return status to Normal while preserving game and air state.</td></tr>
+<tr><td><code>admin.player.panic</code></td><td>Admin</td><td><code>playerId</code></td><td>Set one player off-air and Normal while preserving the current game.</td></tr>
+<tr><td><code>admin.event.reset</code></td><td>Admin</td><td>None</td><td>Reset transient production state for the event.</td></tr>
+<tr><td><code>admin.compact.mode</code></td><td>Admin</td><td><code>mode</code></td><td>Change the server-wide compact-monitor mode.</td></tr>
+<tr><td><code>state.get</code></td><td>None</td><td>None</td><td>Request the current state snapshot.</td></tr>
+</table>
 
-<section id="auth-admin" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">auth.admin</span></h2>
-<pre><code>{
-  "type": "auth.admin",
-  "data": {
-    "key": "YOUR_ADMIN_KEY"
-  }
-}</code></pre>
-</section>
+<h3>Common admin examples</h3>
+<pre><code>{"type":"admin.player.air","data":{"playerId":"john","airState":"live"}}
+{"type":"admin.player.status","data":{"playerId":"john","status":"soon"}}
+{"type":"admin.player.game","data":{"playerId":"john","game":"TUNIC"}}
+{"type":"admin.player.panic","data":{"playerId":"john"}}
+{"type":"admin.event.reset","data":{}}
+{"type":"admin.compact.mode","data":{"mode":"priority"}}</code></pre>
 
-<section id="player-game" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">player.game</span></h2>
-<pre><code>{
-  "type": "player.game",
-  "data": {
-    "game": "Super Metroid"
-  }
-}</code></pre>
-<p>Changing game resets status to Normal and clears status timing and ASAP acknowledgement.</p>
-</section>
-
-<section id="player-status" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">player.status</span></h2>
-<pre><code>{
-  "type": "player.status",
-  "data": {
-    "status": "asap"
-  }
-}</code></pre>
-</section>
-
-<section id="admin-air" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.air</span></h2>
-<p>Sets a player's air state. Requires admin authentication.</p>
-<pre><code>{
-  "type": "admin.player.air",
-  "data": {
-    "playerId": "john",
-    "airState": "live"
-  }
-}</code></pre>
-<p>Valid values: <code>off</code>, <code>standby</code>, <code>live</code>.</p>
-<ul>
-<li>Only one player may be live at a time.</li>
-<li>Taking an active ASAP request live records <code>asapTakenLiveAt</code>.</li>
-</ul>
-</section>
-
-<section id="admin-status" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.status</span></h2>
-<p>Sets a player's production status directly. Requires admin authentication.</p>
-<h3>Request</h3>
-<pre><code>{
-  "type": "admin.player.status",
-  "data": {
-    "playerId": "john",
-    "status": "soon"
-  }
-}</code></pre>
-<h3>Valid Status Values</h3>
-<pre><code>normal
-soon
-asap
-downtime</code></pre>
-<h3>Behavior</h3>
-<ul>
-<li>Uses the same configured expiration duration as a player-originated status change.</li>
-<li>Sets a fresh <code>statusSetAt</code> timestamp for non-normal statuses.</li>
-<li>Calculates <code>statusExpiresAt</code> from the configured timeout.</li>
-<li>Clears <code>asapTakenLiveAt</code>, making a newly assigned ASAP status a fresh production request.</li>
-<li>Persists state and broadcasts one new <code>state.snapshot</code>.</li>
-</ul>
-</section>
-
-<section id="admin-game" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.game</span></h2>
-<p>Changes a player's current game. Requires admin authentication.</p>
-<h3>Request</h3>
-<pre><code>{
-  "type": "admin.player.game",
-  "data": {
-    "playerId": "john",
-    "game": "Celeste"
-  }
-}</code></pre>
-<h3>Validation</h3>
-<p>The game must appear in that player's configured <code>games</code> array.</p>
-<h3>Behavior</h3>
-<p>This intentionally mirrors the player-side <code>player.game</code> behavior:</p>
-<ul>
-<li>Sets <code>currentGame</code>.</li>
-<li>Resets status to <code>normal</code>.</li>
-<li>Clears <code>statusSetAt</code> and <code>statusExpiresAt</code>.</li>
-<li>Clears <code>asapTakenLiveAt</code>.</li>
-<li>Persists state and broadcasts one new <code>state.snapshot</code>.</li>
-</ul>
-</section>
-
-<section id="admin-update" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.update</span></h2>
-<p>Atomically updates one or more supported player fields. Requires admin authentication.</p>
-<h3>Request</h3>
-<pre><code>{
-  "type": "admin.player.update",
-  "data": {
-    "playerId": "john",
-    "currentGame": "Super Metroid",
-    "status": "asap",
-    "airState": "standby"
-  }
-}</code></pre>
-<h3>Supported Fields</h3>
-<table><thead><tr><th>Field</th><th>Type</th><th>Validation</th></tr></thead><tbody>
-<tr><td><code>playerId</code></td><td>String</td><td>Required; must identify a configured player.</td></tr>
-<tr><td><code>currentGame</code></td><td>String</td><td>Optional; must be assigned to that player.</td></tr>
-<tr><td><code>status</code></td><td>String</td><td>Optional; must be a configured status.</td></tr>
-<tr><td><code>airState</code></td><td>String</td><td>Optional; must be <code>off</code>, <code>standby</code>, or <code>live</code>.</td></tr>
-</tbody></table>
-<h3>Atomic Validation</h3>
-<div class="callout"><strong>All requested fields are validated before any state is changed.</strong> If one supplied field is invalid, none of the requested changes are applied.</div>
-<h3>Order of Application</h3>
-<ol>
-<li>If <code>currentGame</code> is supplied, the game is changed first and the previous status/ASAP acknowledgement is cleared.</li>
-<li>If <code>status</code> is also supplied, that status is then applied as a fresh status request.</li>
-<li>If <code>airState</code> is supplied, it is applied last, including the one-live-player rule and ASAP acknowledgement behavior.</li>
-</ol>
-<h3>Example: Change Game and Immediately Request ASAP</h3>
+<h3>Atomic player update</h3>
+<p><code>admin.player.update</code> validates every supplied field before changing state. If any field is invalid, nothing is applied.</p>
 <pre><code>{
   "type": "admin.player.update",
   "data": {
     "playerId": "john",
     "currentGame": "TUNIC",
-    "status": "asap"
-  }
-}</code></pre>
-<p>The resulting state is <code>currentGame: "TUNIC"</code> with a fresh <code>asap</code> request, despite game changes normally resetting status.</p>
-<h3>Example: Prepare a Player for Air</h3>
-<pre><code>{
-  "type": "admin.player.update",
-  "data": {
-    "playerId": "john",
-    "status": "soon",
+    "status": "asap",
     "airState": "standby"
   }
 }</code></pre>
-<h3>Broadcast Behavior</h3>
-<p>A successful atomic update persists once and emits a single resulting <code>state.snapshot</code>, avoiding intermediate states from multiple separate commands.</p>
 </section>
 
-<section id="admin-clear" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.clear</span></h2>
-<pre><code>{
-  "type": "admin.player.clear",
-  "data": {
-    "playerId": "john"
-  }
-}</code></pre>
-<p>Resets the player's status to Normal and clears status timestamps and ASAP acknowledgement. Current game and air state are preserved.</p>
-</section>
-
-
-<section id="admin-panic" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.player.panic</span></h2>
-<p>Emergency transient-state reset for one player. Requires admin authentication.</p>
-<pre><code>{
-  "type": "admin.player.panic",
-  "data": {
-    "playerId": "john"
-  }
-}</code></pre>
-<p>Sets the player off-air, returns status to Normal, clears status timers and ASAP acknowledgement, and preserves the player's current game.</p>
-</section>
-
-<section id="admin-event-reset" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.event.reset</span></h2>
-<p>Resets transient production state for the entire event. Requires admin authentication.</p>
-<pre><code>{
-  "type": "admin.event.reset",
-  "data": {}
-}</code></pre>
+<section id="behavior">
+<h2>Important behavior</h2>
 <ul>
-<li>Sets every player off-air.</li>
-<li>Returns every status to Normal.</li>
-<li>Clears status timers and ASAP acknowledgements.</li>
-<li>Returns compact monitor mode to <code>priority</code>.</li>
-<li>Preserves current-game selections and live connection state.</li>
+<li>A game change resets the player's status to Normal and clears status timing and ASAP acknowledgement.</li>
+<li>Setting a status starts a fresh request using that status's configured expiration time.</li>
+<li>Only one player can be <code>live</code> at a time.</li>
+<li>Taking an active ASAP request live records its acknowledgement.</li>
+<li><code>admin.player.clear</code> preserves current game and air state.</li>
+<li><code>admin.player.panic</code> preserves current game but sets the player off-air and Normal.</li>
+<li><code>admin.event.reset</code> preserves current-game selections and connection state, while clearing transient production state and returning compact mode to <code>priority</code>.</li>
+<li>Compact mode accepts <code>calls</code> as an alias for <code>priority</code>, and <code>downtime</code> as an alias for <code>bk</code>.</li>
 </ul>
 </section>
 
-<section id="admin-compact" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">admin.compact.mode</span></h2>
-<pre><code>{
-  "type": "admin.compact.mode",
-  "data": {
-    "mode": "priority"
-  }
-}</code></pre>
-<table><thead><tr><th>Accepted Input</th><th>Resolved Mode</th></tr></thead><tbody>
-<tr><td><code>priority</code>, <code>calls</code></td><td><code>priority</code></td></tr>
-<tr><td><code>normal</code></td><td><code>normal</code></td></tr>
-<tr><td><code>bk</code>, <code>downtime</code></td><td><code>bk</code></td></tr>
-<tr><td><code>all</code></td><td><code>all</code></td></tr>
-</tbody></table>
-</section>
-
-<section id="state-get" class="wsendpoint">
-<h2><span class="ws-tag">CLIENT → SERVER</span><span class="path">state.get</span></h2>
-<pre><code>{
-  "type": "state.get",
-  "requestId": "state-42"
-}</code></pre>
-<p>Returns a <code>state.snapshot</code> carrying the same <code>requestId</code>. No authentication required.</p>
-</section>
-
-<section id="event-snapshot" class="wsendpoint">
-<h2><span class="server-tag">SERVER → CLIENT</span><span class="path">state.snapshot</span></h2>
-<p>Full state broadcast sent on connection and after relevant state changes.</p>
-</section>
-
-<section id="event-compact" class="wsendpoint">
-<h2><span class="server-tag">SERVER → CLIENT</span><span class="path">compact.mode</span></h2>
-<p>Broadcast whenever the server-wide compact monitor mode changes.</p>
-</section>
-
-<section id="event-ack" class="wsendpoint">
-<h2><span class="server-tag">SERVER → CLIENT</span><span class="path">ack</span></h2>
-<h3>Success</h3>
+<section id="events">
+<h2>Server messages</h2>
+<table>
+<tr><th>Type</th><th>When sent</th></tr>
+<tr><td><code>state.snapshot</code></td><td>On connection, in response to <code>state.get</code>, and after relevant state changes.</td></tr>
+<tr><td><code>compact.mode</code></td><td>When the server-wide compact-monitor mode changes.</td></tr>
+<tr><td><code>ack</code></td><td>In response to client requests that receive an acknowledgement.</td></tr>
+</table>
 <pre><code>{
   "type": "ack",
   "requestId": "abc123",
@@ -531,94 +183,39 @@ downtime</code></pre>
     "ok": true
   }
 }</code></pre>
-<h3>Failure</h3>
-<pre><code>{
-  "type": "ack",
-  "requestId": "abc123",
-  "data": {
-    "ok": false,
-    "error": "Unknown player."
-  }
-}</code></pre>
+<p>Failed acknowledgements use <code>ok: false</code> and include an <code>error</code> string.</p>
 </section>
 
-<section id="ws-errors">
-<h2>WebSocket Errors & Validation</h2>
-<table><thead><tr><th>Error</th><th>Typical Cause</th></tr></thead><tbody>
-<tr><td><code>Invalid player link.</code></td><td>Bad player ID or token.</td></tr>
-<tr><td><code>Invalid production key.</code></td><td>Bad admin key.</td></tr>
-<tr><td><code>Not authenticated as a player.</code></td><td>Player command sent before player authentication.</td></tr>
-<tr><td><code>Not authenticated as production/admin.</code></td><td>Admin command sent before admin authentication.</td></tr>
-<tr><td><code>That game is not assigned to this player.</code></td><td>Invalid game value.</td></tr>
-<tr><td><code>Unknown status.</code></td><td>Invalid status.</td></tr>
-<tr><td><code>Unknown player.</code></td><td>Invalid player ID.</td></tr>
-<tr><td><code>Unknown air state.</code></td><td>Invalid air state.</td></tr>
-<tr><td><code>Unknown compact mode. Use priority, normal, bk, or all.</code></td><td>Invalid compact mode.</td></tr>
-<tr><td><code>Unknown message type: ...</code></td><td>Unsupported command name.</td></tr>
-<tr><td><code>Message must be valid JSON.</code></td><td>Malformed JSON.</td></tr>
-<tr><td><code>Binary messages are not supported.</code></td><td>Binary frame sent.</td></tr>
-</tbody></table>
-</section>
-
-<section id="heartbeat">
-<h2>Heartbeat & Reconnection</h2>
-<p>The server uses WebSocket ping/pong heartbeat handling to detect dead clients. New connections must re-authenticate before issuing protected commands.</p>
+<section id="errors">
+<h2>Errors</h2>
+<table>
+<tr><th>Error</th><th>Meaning</th></tr>
+<tr><td><code>Invalid player link.</code></td><td>Player ID or token is invalid.</td></tr>
+<tr><td><code>Invalid production key.</code></td><td>Admin key is invalid.</td></tr>
+<tr><td><code>Not authenticated as a player.</code></td><td>A player command was sent before player authentication.</td></tr>
+<tr><td><code>Not authenticated as production/admin.</code></td><td>An admin command was sent before admin authentication.</td></tr>
+<tr><td><code>That game is not assigned to this player.</code></td><td>The requested game is not in that player's configured game list.</td></tr>
+<tr><td><code>Unknown status.</code></td><td>The requested status is invalid.</td></tr>
+<tr><td><code>Unknown player.</code></td><td>The player ID is invalid.</td></tr>
+<tr><td><code>Unknown air state.</code></td><td>The air-state value is invalid.</td></tr>
+<tr><td><code>Unknown compact mode. Use priority, normal, bk, or all.</code></td><td>The compact-monitor mode is invalid.</td></tr>
+<tr><td><code>Message must be valid JSON.</code></td><td>The WebSocket message is malformed.</td></tr>
+<tr><td><code>Binary messages are not supported.</code></td><td>A binary WebSocket frame was sent.</td></tr>
+</table>
+<p>The server uses WebSocket ping/pong heartbeat handling to detect dead clients.</p>
 </section>
 
 <section id="companion">
-<h2>Bitfocus Companion Integration</h2>
-<p>Connect Companion's Generic WebSocket module to:</p>
-<pre><code>ws://SERVER-IP:3000/ws</code></pre>
-<p>Authenticate:</p>
+<h2>Bitfocus Companion</h2>
+<p>Connect a Generic WebSocket connection to <code>ws://SERVER-IP:3000/ws</code>, then authenticate with <code>auth.admin</code>.</p>
 <pre><code>{"type":"auth.admin","data":{"key":"YOUR_ADMIN_KEY"}}</code></pre>
-<h3>Example Production Messages</h3>
-<table><thead><tr><th>Action</th><th>Message</th></tr></thead><tbody>
-<tr><td>Set player Soon</td><td><code>{"type":"admin.player.status","data":{"playerId":"john","status":"soon"}}</code></td></tr>
-<tr><td>Set player ASAP</td><td><code>{"type":"admin.player.status","data":{"playerId":"john","status":"asap"}}</code></td></tr>
-<tr><td>Change game</td><td><code>{"type":"admin.player.game","data":{"playerId":"john","game":"TUNIC"}}</code></td></tr>
-<tr><td>Standby player</td><td><code>{"type":"admin.player.air","data":{"playerId":"john","airState":"standby"}}</code></td></tr>
-<tr><td>Take player live</td><td><code>{"type":"admin.player.air","data":{"playerId":"john","airState":"live"}}</code></td></tr>
-<tr><td>Atomic update</td><td><code>{"type":"admin.player.update","data":{"playerId":"john","currentGame":"TUNIC","status":"asap","airState":"standby"}}</code></td></tr>
-</tbody></table>
+<p>After authentication, the admin messages above can be sent directly from Companion actions.</p>
 </section>
 
 <section id="graphics">
-<h2>Graphics Integration</h2>
-<p>Polling graphics should use the lower-third HTTP endpoints. Push-based graphics should subscribe to <code>state.snapshot</code>.</p>
+<h2>Graphics</h2>
+<p>Polling graphics can use the lower-third HTTP endpoints. Integrations that need immediate updates can listen for <code>state.snapshot</code> over WebSocket.</p>
 </section>
 
-<section id="quick-reference">
-<h2>Quick Reference</h2>
-<h3>HTTP Endpoints</h3>
-<table><thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr></thead><tbody>
-<tr><td>GET/HEAD</td><td><code>/api/config</code></td><td>None</td><td>Public configuration.</td></tr>
-<tr><td>GET/HEAD</td><td><code>/api/state</code></td><td>None</td><td>Full current state.</td></tr>
-<tr><td>GET/HEAD</td><td><code>/api/lower-thirds</code></td><td>None</td><td>All graphics-friendly players.</td></tr>
-<tr><td>GET/HEAD</td><td><code>/api/lower-thirds/live</code></td><td>None</td><td>Current live player.</td></tr>
-<tr><td>GET/HEAD</td><td><code>/api/lower-thirds/{playerId}</code></td><td>None</td><td>One graphics-friendly player.</td></tr>
-<tr><td>GET/HEAD</td><td><code>/health</code></td><td>None</td><td>Health/discovery.</td></tr>
-</tbody></table>
-
-<h3>WebSocket Commands</h3>
-<table><thead><tr><th>Type</th><th>Auth</th><th>Purpose</th></tr></thead><tbody>
-<tr><td><code>auth.player</code></td><td>None</td><td>Authenticate as player.</td></tr>
-<tr><td><code>auth.admin</code></td><td>None</td><td>Authenticate as admin.</td></tr>
-<tr><td><code>player.game</code></td><td>Player</td><td>Set own current game.</td></tr>
-<tr><td><code>player.status</code></td><td>Player</td><td>Set own production status.</td></tr>
-<tr><td><code>admin.player.air</code></td><td>Admin</td><td>Set player air state.</td></tr>
-<tr><td><code>admin.player.status</code></td><td>Admin</td><td>Set player production status.</td></tr>
-<tr><td><code>admin.player.game</code></td><td>Admin</td><td>Set player current game.</td></tr>
-<tr><td><code>admin.player.update</code></td><td>Admin</td><td>Atomically update game/status/air state.</td></tr>
-<tr><td><code>admin.player.clear</code></td><td>Admin</td><td>Clear player request.</td></tr>
-<tr><td><code>admin.player.panic</code></td><td>Admin</td><td>Reset one player to off-air / Normal while preserving current game.</td></tr>
-<tr><td><code>admin.event.reset</code></td><td>Admin</td><td>Reset transient production state for the entire event.</td></tr>
-<tr><td><code>admin.compact.mode</code></td><td>Admin</td><td>Change compact display mode.</td></tr>
-<tr><td><code>state.get</code></td><td>None</td><td>Request current state.</td></tr>
-</tbody></table>
-</section>
-
-<div class="footer">Archipelago Broadcast Control v3.6 — Complete API Reference</div>
-</main>
-</div>
-</body>
+</main></body>
 </html>

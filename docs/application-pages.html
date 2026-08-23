@@ -3,403 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Archipelago Broadcast Control — Application Pages Reference</title>
+<title>Archipelago Broadcast Control — Application Pages</title>
 <style>
-:root{
-  --bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;
-  --accent:#2457d6;--accent-soft:#eaf0ff;--code-bg:#0f172a;--code-text:#e5eefc;
-  --good:#0f766e;--warn:#9a6700;--purple:#6d4aff;--red:#b42318;
-  --shadow:0 8px 24px rgba(20,32,56,.08);--radius:14px
-}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.page{max-width:1240px;margin:0 auto;padding:32px 24px 64px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px}
-.sidebar{position:sticky;top:18px;align-self:start;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;max-height:calc(100vh - 36px);overflow:auto}
-.sidebar h2{font-size:12px;text-transform:uppercase;letter-spacing:.11em;margin:14px 0 7px;color:var(--muted)}
-.sidebar h2:first-child{margin-top:0}.sidebar ul{list-style:none;padding:0;margin:0}.sidebar li{margin:2px 0}
-.sidebar a{display:block;padding:5px 8px;border-radius:7px;color:var(--text);font-size:13px}.sidebar a:hover{background:var(--accent-soft);text-decoration:none}
-main{min-width:0}.hero{background:linear-gradient(135deg,#0f172a,#1f3b7a);color:white;border-radius:18px;padding:36px;box-shadow:var(--shadow);margin-bottom:24px}
-.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.1em;opacity:.75;margin-bottom:8px}
-h1{margin:0 0 10px;font-size:clamp(32px,4vw,48px);line-height:1.06}.subtitle{margin:0;color:#d6e3ff;font-size:18px;max-width:800px}
-.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:13px;font-weight:700}
-section{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin:0 0 22px}
-h2{margin:0 0 14px;font-size:26px;line-height:1.2}h3{margin:24px 0 10px;font-size:19px}h4{margin:18px 0 7px;font-size:16px}
-p{margin:10px 0}.lead{font-size:17px;color:var(--muted)}
-.page-entry{border-left:5px solid var(--accent)}.path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:19px;font-weight:700}
-.badge{display:inline-block;font-weight:800;font-size:12px;padding:5px 8px;border-radius:7px;margin-right:8px;vertical-align:middle}
-.public{background:#dff5ef;color:var(--good)}.protected{background:#fff1d6;color:#8a5a00}.display{background:#eee9ff;color:#5638c8}.graphics{background:#ffe7e5;color:var(--red)}
-pre{background:var(--code-bg);color:var(--code-text);border-radius:12px;padding:16px 18px;overflow:auto;border:1px solid #263247;font-size:13.5px;line-height:1.5;white-space:pre}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}p code,li code,td code{background:#eef2f7;color:#24324b;padding:2px 5px;border-radius:5px;font-size:.94em}
-table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:#f0f4f8;font-weight:800}
-.callout{background:var(--accent-soft);border:1px solid #ccd9ff;border-radius:12px;padding:14px 16px;margin:14px 0}
-.note{border-left:4px solid var(--warn);padding:10px 14px;background:#fff9e8;border-radius:8px}.muted{color:var(--muted)}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.mini{border:1px solid var(--border);border-radius:11px;padding:14px;background:#fbfcfe}.mini strong{display:block;margin-bottom:4px}
-.footer{color:var(--muted);font-size:13px;text-align:center;padding:12px 0 0}
-@media(max-width:920px){.page{grid-template-columns:1fr}.sidebar{position:relative;top:auto;max-height:none}.grid2{grid-template-columns:1fr}}
-@media print{body{background:white}.page{display:block;max-width:none;padding:0}.sidebar{display:none}.hero,section{box-shadow:none}.hero{border:1px solid #ccc}section{break-inside:avoid}pre{white-space:pre-wrap;word-break:break-word}a{color:inherit;text-decoration:none}}
+:root{--bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;--accent:#2457d6;--code:#0f172a;--code-text:#e5eefc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+main{max-width:980px;margin:auto;padding:34px 24px 60px}h1{margin:0 0 8px;font-size:38px}h2{margin:34px 0 12px;border-bottom:1px solid var(--border);padding-bottom:7px}h3{margin:22px 0 7px}
+p{margin:7px 0 12px}.muted{color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}p code,li code,td code{background:#edf1f6;padding:2px 5px;border-radius:4px}
+pre{background:var(--code);color:var(--code-text);padding:14px 16px;border-radius:8px;overflow:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0 22px;font-size:14px}th,td{border:1px solid var(--border);padding:9px 11px;text-align:left;vertical-align:top}th{background:#eef2f6}
+.page{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:18px 20px;margin:14px 0}.page h3{margin-top:0}.note{border-left:3px solid var(--accent);padding:8px 12px;background:#eef3ff}
+a{color:var(--accent)}
 </style>
 </head>
-<body>
-<div class="page">
-<nav class="sidebar" aria-label="Table of contents">
-<h2>Overview</h2>
-<ul>
-<li><a href="#overview">Application Overview</a></li>
-<li><a href="#base-url">Base URL</a></li>
-<li><a href="#page-summary">Page Summary</a></li>
-</ul>
-<h2>Pages</h2>
-<ul>
-<li><a href="#index">/ — Landing Page</a></li>
-<li><a href="#player">/player.html — Player Controls</a></li>
-<li><a href="#dashboard">/dashboard.html — Production Dashboard</a></li>
-<li><a href="#compact">/compact.html — Compact Monitor</a></li>
-<li><a href="#multiview">/multiview.html — Status Multiview</a></li>
-<li><a href="#overlay">/overlay.html — Player Overlay</a></li>
-</ul>
-<h2>Operations</h2>
-<ul>
-<li><a href="#websocket">Real-Time Updates</a></li>
-<li><a href="#browser-sources">Browser Source Usage</a></li>
-<li><a href="#troubleshooting">Troubleshooting</a></li>
-<li><a href="#deployment">Deployment Notes</a></li>
-</ul>
-</nav>
-
-<main>
-<header class="hero">
-<div class="eyebrow">Archipelago Broadcast Control</div>
-<h1>Application Pages Reference</h1>
-<p class="subtitle">Reference for every HTML page served by the v3.6 application, including intended use, URLs, parameters, authentication, and production behavior.</p>
-<div class="meta"><span class="pill">Application Version: v3.6</span><span class="pill">6 HTML Pages</span><span class="pill">Real-Time WebSocket Updates</span></div>
+<body><main>
+<header>
+<h1>Application Pages</h1>
+<p class="muted">Archipelago Broadcast Control</p>
+<p>The server provides a handful of browser pages for players, production, monitoring, and graphics. API and WebSocket details are covered in the separate API reference.</p>
 </header>
 
-<section id="overview">
-<h2>Application Overview</h2>
-<p class="lead">Archipelago Broadcast Control serves a small set of purpose-built pages for players, production staff, multiview monitoring, and viewer-facing graphics.</p>
-<p>All pages are static HTML/CSS/JavaScript files served by the application itself. Pages that need live state connect to the server's standard WebSocket endpoint at <code>/ws</code> and react to <code>state.snapshot</code> updates.</p>
-<div class="callout"><strong>Scope:</strong> This document covers HTML pages intended to be opened in a browser or browser source. API endpoints and the WebSocket protocol are documented separately.</div>
-</section>
-
-<section id="base-url">
-<h2>Base URL</h2>
-<p>On a local production network:</p>
-<pre><code>http://SERVER-IP:3000</code></pre>
-<p>Example:</p>
-<pre><code>http://192.168.1.50:3000</code></pre>
-<p>All page URLs in this document are relative to that base URL.</p>
-</section>
-
-<section id="page-summary">
-<h2>Page Summary</h2>
+<h2>Pages</h2>
 <table>
-<thead><tr><th>Page</th><th>Audience</th><th>Authentication</th><th>Purpose</th></tr></thead>
-<tbody>
-<tr><td><code>/</code></td><td>Anyone on network</td><td>None</td><td>Navigation landing page.</td></tr>
-<tr><td><code>/player.html</code></td><td>Players</td><td>Player ID + token</td><td>Select current game, set production status, view standby/live state.</td></tr>
-<tr><td><code>/dashboard.html</code></td><td>Production</td><td>Admin key</td><td>Full production control dashboard.</td></tr>
-<tr><td><code>/compact.html</code></td><td>Production</td><td>None</td><td>640×360 distance-readable call/status monitor.</td></tr>
-<tr><td><code>/multiview.html</code></td><td>Production</td><td>None</td><td>Status-aware 12-up style metadata mockup.</td></tr>
-<tr><td><code>/overlay.html</code></td><td>Graphics / viewer output</td><td>None</td><td>Transparent per-player lower-third style overlay.</td></tr>
-</tbody>
-</table>
-</section>
-
-<section id="index" class="page-entry">
-<h2><span class="badge public">PUBLIC</span><span class="path">/</span></h2>
-<h3>Landing Page</h3>
-<p>The root page provides simple navigation to the application's main interfaces.</p>
-<h3>URL</h3>
-<pre><code>http://SERVER-IP:3000/</code></pre>
-<h3>Available Links</h3>
-<ul>
-<li><strong>Player controls</strong> → <code>/player.html</code></li>
-<li><strong>Production dashboard</strong> → <code>/dashboard.html</code></li>
-<li><strong>Multiview status mockup</strong> → <code>/multiview.html</code></li>
-<li><strong>Compact production status</strong> → <code>/compact.html</code></li>
-</ul>
-<h3>Operational Notes</h3>
-<p>The player-control link on this page does not include a player ID or token. It is therefore useful as a navigation/reference page but is not itself a complete player login link.</p>
-</section>
-
-<section id="player" class="page-entry">
-<h2><span class="badge protected">PLAYER AUTH</span><span class="path">/player.html</span></h2>
-<h3>Player Broadcast Controls</h3>
-<p>The player page is the primary interface each participant uses during the event. It is designed to minimize player workload while providing production with current-game and editorial-intent information.</p>
-
-<h3>Required Query Parameters</h3>
-<table>
-<thead><tr><th>Parameter</th><th>Required</th><th>Description</th></tr></thead>
-<tbody>
-<tr><td><code>id</code></td><td>Yes</td><td>Configured player ID.</td></tr>
-<tr><td><code>token</code></td><td>Yes</td><td>Authentication token configured for that player.</td></tr>
-</tbody>
+<tr><th>Path</th><th>Used by</th><th>Purpose</th></tr>
+<tr><td><code>/</code></td><td>Anyone</td><td>Links to the main application pages.</td></tr>
+<tr><td><code>/player.html</code></td><td>Players</td><td>Game selection, production status, and on-air feedback.</td></tr>
+<tr><td><code>/dashboard.html</code></td><td>Production</td><td>Full player and production control.</td></tr>
+<tr><td><code>/compact.html</code></td><td>Production / hosts</td><td>640×360 call monitor for at-a-glance status.</td></tr>
+<tr><td><code>/multiview.html</code></td><td>Production</td><td>Metadata mockup for a status-aware multiview.</td></tr>
+<tr><td><code>/overlay.html</code></td><td>Graphics</td><td>Transparent player/game overlay.</td></tr>
 </table>
 
-<h3>Example URL</h3>
-<pre><code>http://192.168.1.50:3000/player.html?id=alan&amp;token=PLAYER_TOKEN</code></pre>
-
-<h3>Player Interface</h3>
-<div class="grid2">
-<div class="mini"><strong>Current Game</strong>A dropdown containing only the games assigned to the authenticated player.</div>
-<div class="mini"><strong>Production Status</strong>Large buttons generated from the configured status definitions.</div>
-<div class="mini"><strong>Broadcast Indicator</strong>Displays <code>NOT ON AIR</code>, <code>STAND BY</code>, or <code>YOU'RE LIVE</code>.</div>
-<div class="mini"><strong>Connection Feedback</strong>Shows connection/reconnection and command-result messages.</div>
+<div class="page">
+<h3><code>/player.html</code> — Player controls</h3>
+<p>Each player receives a link containing their configured player ID and token:</p>
+<pre><code>http://SERVER-IP:3000/player.html?id=john&amp;token=PLAYER_TOKEN</code></pre>
+<p>The page lets the player choose from their assigned games, change production status, and see whether production has marked them Off Air, Stand By, or Live.</p>
+<p>Changing games clears the previous production request. The page reconnects and re-authenticates automatically if its WebSocket connection drops.</p>
+<div class="note">The token in a player URL is a credential. Player links should not be posted publicly.</div>
 </div>
 
-<h3>Current Game Behavior</h3>
-<p>Changing the game sends the <code>player.game</code> WebSocket command. The server also resets the player's production status to Normal and clears any prior ASAP acknowledgement.</p>
-
-<h3>Status Behavior</h3>
-<p>Status buttons are generated from <code>config.json</code>. In the current example configuration they include:</p>
-<table><thead><tr><th>Status</th><th>Typical Meaning</th></tr></thead><tbody>
-<tr><td>Normal</td><td>No special production request.</td></tr>
-<tr><td>Interesting Soon</td><td>Something worth showing is approaching.</td></tr>
-<tr><td>Please Show Me ASAP</td><td>Production should prioritize this player.</td></tr>
-<tr><td>Downtime / No Progression</td><td>Avoid this player unless necessary.</td></tr>
-</tbody></table>
-
-<h3>Air-State Feedback</h3>
-<table><thead><tr><th>Server State</th><th>Player Display</th></tr></thead><tbody>
-<tr><td><code>off</code></td><td>NOT ON AIR</td></tr>
-<tr><td><code>standby</code></td><td>STAND BY</td></tr>
-<tr><td><code>live</code></td><td>YOU'RE LIVE</td></tr>
-</tbody></table>
-
-<h3>Connection Behavior</h3>
-<p>The included WebSocket client automatically reconnects. After reconnection, the page automatically re-authenticates using the player ID and token from the URL.</p>
-<div class="note"><strong>Security:</strong> Because the token is part of the URL, player links should be treated as credentials and should not be posted publicly.</div>
-</section>
-
-<section id="dashboard" class="page-entry">
-<h2><span class="badge protected">ADMIN AUTH</span><span class="path">/dashboard.html</span></h2>
-<h3>Production Dashboard</h3>
-<p>The full production dashboard is the administrative control interface for monitoring players and changing their production state.</p>
-
-<h3>URL</h3>
-<pre><code>http://SERVER-IP:3000/dashboard.html</code></pre>
-
-<h3>Authentication</h3>
-<p>The page prompts for the server's production/admin key. Successful authentication unlocks both the player cards and compact-monitor mode controls.</p>
-
-<h3>Player Card Information</h3>
-<p>Each card displays:</p>
-<ul>
-<li>Player name</li>
-<li>Current game</li>
-<li>Current production status</li>
-<li>Whether the player control page is connected</li>
-<li>Status age, when applicable</li>
-<li>Current air state when not off-air</li>
-</ul>
-
-<h3>System Health Panel</h3>
-<p>After authentication, the dashboard displays application version, server uptime, connected-player count, WebSocket client count, current live player, compact mode, last state-save age, and dashboard connection status. If one or more configured player control pages are disconnected, the panel changes from <code>OK</code> to <code>ATTENTION</code>.</p>
-<h3>Recovery Controls</h3>
-<ul><li><strong>Reset Event State:</strong> sets every player off-air and Normal, clears transient timers/acknowledgements, returns the compact monitor to Calls, and preserves current-game selections.</li><li><strong>Panic reset:</strong> available on each player card; sets only that player off-air and Normal while preserving their current game.</li></ul>
-<h3>Player Controls</h3>
-<table><thead><tr><th>Button</th><th>Action</th></tr></thead><tbody>
-<tr><td>Stand by</td><td>Sets the player's <code>airState</code> to <code>standby</code>.</td></tr>
-<tr><td>Take live</td><td>Sets <code>airState</code> to <code>live</code>; any previously live player is automatically set off-air.</td></tr>
-<tr><td>Off air</td><td>Sets the player's <code>airState</code> to <code>off</code>.</td></tr>
-<tr><td>Clear status</td><td>Returns the player's production request to Normal.</td></tr>
-</tbody></table>
-
-<h3>Compact Monitor Controls</h3>
-<p>The dashboard also changes the server-wide display mode used by <code>/compact.html</code>:</p>
-<table><thead><tr><th>Button</th><th>Compact Mode</th></tr></thead><tbody>
-<tr><td>Calls</td><td><code>priority</code> — ASAP and Soon only.</td></tr>
-<tr><td>Normal</td><td><code>normal</code></td></tr>
-<tr><td>BK</td><td><code>bk</code> — downtime/no-progression players.</td></tr>
-<tr><td>All</td><td><code>all</code></td></tr>
-</tbody></table>
-
-<h3>Sorting</h3>
-<p>The dashboard sorts players by live state and player-reported priority, making active or urgent players easier to find.</p>
-
-<h3>Reconnect Behavior</h3>
-<p>If an already authenticated dashboard reconnects, it automatically attempts to re-authenticate with the production key held in the page's JavaScript memory.</p>
-</section>
-
-<section id="compact" class="page-entry">
-<h2><span class="badge display">PRODUCTION DISPLAY</span><span class="path">/compact.html</span></h2>
-<h3>Compact Production Status Monitor</h3>
-<p>A dedicated, distance-readable status display designed around a 640×360 window.</p>
-
-<h3>URL</h3>
-<pre><code>http://SERVER-IP:3000/compact.html</code></pre>
-
-<h3>Default Mode</h3>
-<p>The default mode is <strong>CALLS</strong>, which shows only players in <code>asap</code> or <code>soon</code> status.</p>
-
-<h3>Available Modes</h3>
-<table><thead><tr><th>Mode</th><th>Display Label</th><th>Players Shown</th></tr></thead><tbody>
-<tr><td><code>priority</code></td><td>CALLS</td><td>ASAP + Soon</td></tr>
-<tr><td><code>normal</code></td><td>NORMAL</td><td>Normal status</td></tr>
-<tr><td><code>bk</code></td><td>BK</td><td>Downtime / BK</td></tr>
-<tr><td><code>all</code></td><td>ALL</td><td>All players</td></tr>
-</tbody></table>
-
-<h3>Mode Control</h3>
-<p>The page has no local controls. Its mode is changed remotely through the production dashboard or the <code>admin.compact.mode</code> WebSocket command. All open compact views update together.</p>
-
-<h3>Row Information</h3>
-<p>Each row contains:</p>
-<ul>
-<li>Large status label: ASAP, SOON, BK, or OK</li>
-<li>Player name</li>
-<li>Current game</li>
-<li>Age of the current non-normal status</li>
-<li>LIVE appended to the status when the player is currently on-air</li>
-</ul>
-
-<h3>Attention Behavior</h3>
-<ul>
-<li><strong>Soon:</strong> flashes for approximately 5.2 seconds after a new request, then remains static.</li>
-<li><strong>ASAP:</strong> flashes continuously until that specific request has been taken live.</li>
-<li><strong>ASAP after being served:</strong> does not start flashing again simply because the player later goes off-air.</li>
-<li><strong>New ASAP request:</strong> begins flashing again.</li>
-</ul>
-
-<h3>Capacity and Overflow</h3>
-<p>The compact monitor displays a maximum of five large rows. If more players match the current mode, the footer displays <code>+N MORE</code> rather than shrinking all rows.</p>
-
-<h3>Empty States</h3>
-<table><thead><tr><th>Mode</th><th>Empty Message</th></tr></thead><tbody>
-<tr><td>CALLS</td><td>NO CALLS</td></tr>
-<tr><td>Other modes</td><td>NONE</td></tr>
-</tbody></table>
-
-<h3>Connection Indicator</h3>
-<p>The footer displays <code>LIVE</code> when connected to the server and <code>DISCONNECTED</code> when the WebSocket connection is down.</p>
-</section>
-
-<section id="multiview" class="page-entry">
-<h2><span class="badge display">PRODUCTION DISPLAY</span><span class="path">/multiview.html</span></h2>
-<h3>Status-Aware Multiview Mockup</h3>
-<p>This page provides a grid of placeholder video tiles showing how production metadata can be integrated into a real multiview.</p>
-
-<h3>URL</h3>
-<pre><code>http://SERVER-IP:3000/multiview.html</code></pre>
-
-<h3>Displayed Metadata</h3>
-<p>Each tile may show:</p>
-<ul>
-<li>Player name</li>
-<li>Current game</li>
-<li>Production status badge when status is not Normal</li>
-<li>STANDBY or LIVE badge when the player's air state is not off</li>
-<li>Priority-dependent border styling</li>
-</ul>
-
-<h3>Intended Use</h3>
-<div class="callout"><strong>This page is a metadata/layout mockup, not a video router.</strong> The tiles do not ingest or display real gameplay video. It is intended to guide or supplement integration with the production system's actual multiview.</div>
-
-<h3>Real-Time Behavior</h3>
-<p>The grid rebuilds from each <code>state.snapshot</code> received from the WebSocket server. No authentication or user interaction is required.</p>
-</section>
-
-<section id="overlay" class="page-entry">
-<h2><span class="badge graphics">GRAPHICS</span><span class="path">/overlay.html</span></h2>
-<h3>Per-Player Overlay</h3>
-<p>A transparent HTML overlay intended for use as a browser source or lower-third style graphic.</p>
-
-<h3>Required Query Parameter</h3>
-<table><thead><tr><th>Parameter</th><th>Required</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>id</code></td><td>Yes</td><td>Player ID whose metadata should be displayed.</td></tr>
-</tbody></table>
-
-<h3>Optional Query Parameter</h3>
-<table><thead><tr><th>Parameter</th><th>Value</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>status</code></td><td><code>0</code></td><td>Suppresses the production status text.</td></tr>
-</tbody></table>
-
-<h3>Examples</h3>
-<p>Show player, game, and non-normal production status:</p>
-<pre><code>http://SERVER-IP:3000/overlay.html?id=alan</code></pre>
-<p>Show only player and game:</p>
-<pre><code>http://SERVER-IP:3000/overlay.html?id=alan&amp;status=0</code></pre>
-
-<h3>Displayed Fields</h3>
-<ul>
-<li>Player name</li>
-<li>Current game</li>
-<li>Human-readable status label when status display is enabled and the status is not Normal</li>
-</ul>
-
-<h3>Transparency</h3>
-<p>The page background is transparent, allowing it to be placed directly over video in OBS, vMix, or another browser-source capable graphics system.</p>
-
-<h3>Behavior</h3>
-<p>The overlay listens to <code>state.snapshot</code>, selects the player matching the <code>id</code> parameter, and updates automatically whenever their current game or status changes.</p>
-<div class="note"><strong>Viewer-facing recommendation:</strong> Use <code>status=0</code> for a normal lower third unless production-status information is intentionally meant to be visible to viewers.</div>
-</section>
-
-<section id="websocket">
-<h2>Real-Time Update Behavior</h2>
-<p>The interactive and display pages use the application's native WebSocket client and connect to:</p>
-<pre><code>ws://SERVER-IP:3000/ws</code></pre>
-<table><thead><tr><th>Page</th><th>Uses WebSocket</th><th>Sends Commands</th></tr></thead><tbody>
-<tr><td>Landing page</td><td>No</td><td>No</td></tr>
-<tr><td>Player controls</td><td>Yes</td><td>Player authentication, game, status</td></tr>
-<tr><td>Production dashboard</td><td>Yes</td><td>Admin authentication, air state, clear status, compact mode</td></tr>
-<tr><td>Compact monitor</td><td>Yes</td><td>No</td></tr>
-<tr><td>Multiview</td><td>Yes</td><td>No</td></tr>
-<tr><td>Player overlay</td><td>Yes</td><td>No</td></tr>
-</tbody></table>
-<p>The shared <code>ws-client.js</code> helper provides automatic reconnection for application pages that use it.</p>
-</section>
-
-<section id="browser-sources">
-<h2>Browser Source Usage</h2>
-<h3>Best Candidates</h3>
-<table><thead><tr><th>Page</th><th>Recommended Browser-Source Use</th></tr></thead><tbody>
-<tr><td><code>/overlay.html</code></td><td>Viewer-facing player/game lower third.</td></tr>
-<tr><td><code>/compact.html</code></td><td>Production confidence/status monitor at 640×360.</td></tr>
-<tr><td><code>/multiview.html</code></td><td>Reference/status display; not actual video multiview replacement.</td></tr>
-</tbody></table>
-<h3>Caching</h3>
-<div class="note"><strong>Operational caution:</strong> Browser sources can cache CSS and JavaScript aggressively. After application updates, perform a hard refresh or version static asset URLs to avoid stale behavior.</div>
-</section>
-
-<section id="troubleshooting">
-<h2>Page Troubleshooting</h2>
-<h3>Page Loads but Does Not Update</h3>
-<ol>
-<li>Open browser developer tools.</li>
-<li>Confirm the JavaScript files return HTTP 200.</li>
-<li>Check the Console for JavaScript errors.</li>
-<li>Check the Network → WebSocket panel for a connection to <code>/ws</code>.</li>
-<li>Confirm a <code>state.snapshot</code> is received after connecting.</li>
-</ol>
-
-<h3>Player Page Shows an Error</h3>
-<p>Verify that both <code>id</code> and <code>token</code> are present and match <code>config.json</code>.</p>
-
-<h3>Production Dashboard Connect Button Fails</h3>
-<p>Verify the admin key, confirm the WebSocket is connected, and look for the <code>auth.admin</code> request and corresponding <code>ack</code> in developer tools.</p>
-
-<h3>Compact or Overlay Shows Old Styling</h3>
-<p>Hard-refresh the page or clear the browser-source cache. A cached stylesheet can make the rendered page appear inconsistent with the current JavaScript/server state.</p>
-</section>
-
-<section id="deployment">
-<h2>Deployment Notes</h2>
-<p>All pages are served from the application's <code>public/</code> directory by the same Node.js server that hosts the HTTP API and WebSocket endpoint.</p>
-<p>For a local production network, use the server's LAN address. For internet deployment, place the application behind HTTPS/WSS and apply appropriate access controls, especially for player URLs containing tokens and the admin-facing dashboard.</p>
-<h3>Suggested Bookmarks</h3>
-<table><thead><tr><th>Role</th><th>Bookmark</th></tr></thead><tbody>
-<tr><td>Production lead</td><td><code>/dashboard.html</code></td></tr>
-<tr><td>Compact confidence display</td><td><code>/compact.html</code></td></tr>
-<tr><td>Multiview reference</td><td><code>/multiview.html</code></td></tr>
-<tr><td>Player station</td><td>Unique <code>/player.html?id=...&amp;token=...</code> URL</td></tr>
-<tr><td>Graphics source</td><td>Unique <code>/overlay.html?id=...&amp;status=0</code> URL</td></tr>
-</tbody></table>
-</section>
-
-<div class="footer">Archipelago Broadcast Control v3.6 — Application Pages Reference</div>
-</main>
+<div class="page">
+<h3><code>/dashboard.html</code> — Production dashboard</h3>
+<p>The dashboard is the main administrative view. It requires the production admin key.</p>
+<p>It shows player game/status/connection information and provides controls for Stand By, Live, Off Air, status clearing, panic reset, event reset, and compact-monitor mode. It also displays server and player connection health.</p>
 </div>
-</body>
+
+<div class="page">
+<h3><code>/compact.html</code> — Compact monitor</h3>
+<p>A distance-readable 640×360 display intended for quick production or host reference. It has no local controls.</p>
+<table>
+<tr><th>Mode</th><th>Shows</th></tr>
+<tr><td><code>priority</code> / CALLS</td><td>ASAP and Soon requests</td></tr>
+<tr><td><code>normal</code></td><td>Normal players</td></tr>
+<tr><td><code>bk</code></td><td>Downtime / no-progression players</td></tr>
+<tr><td><code>all</code></td><td>All players</td></tr>
+</table>
+<p>Soon calls flash briefly when first received. ASAP calls continue flashing until that request has been taken live. The display shows up to five rows and reports additional matching players as <code>+N MORE</code>.</p>
+</div>
+
+<div class="page">
+<h3><code>/multiview.html</code> — Status multiview</h3>
+<p>A metadata/layout mockup showing player name, game, production status, and air state in a tiled view.</p>
+<p>This page does not ingest gameplay video and is not a video router. It is intended as a reference or supplement for a production multiview.</p>
+</div>
+
+<div class="page">
+<h3><code>/overlay.html</code> — Player overlay</h3>
+<p>A transparent browser-source graphic for a single player.</p>
+<pre><code>http://SERVER-IP:3000/overlay.html?id=john
+http://SERVER-IP:3000/overlay.html?id=john&amp;status=0</code></pre>
+<p><code>id</code> selects the player. Adding <code>status=0</code> hides production-status text and leaves the player name and current game.</p>
+</div>
+
+<h2>Real-time updates</h2>
+<p>The player, dashboard, compact, multiview, and overlay pages update through the server's WebSocket connection at <code>/ws</code>. The landing page does not use WebSocket.</p>
+
+<p>For message formats, authentication, HTTP endpoints, and production automation, see the <a href="api-reference.html">API Reference</a>.</p>
+</main></body>
 </html>
