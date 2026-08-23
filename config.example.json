@@ -2,16 +2,16 @@
   "eventName": "Archipelago Multiworld",
   "players": [
     {
-      "id": "alan",
-      "name": "Alan",
-      "token": "replace-with-a-long-random-token",
+      "id": "john",
+      "name": "John",
+      "token": "replace-with-johns-long-random-token",
       "games": ["Super Metroid", "Celeste", "TUNIC"],
       "startingGame": "Super Metroid"
     },
     {
-      "id": "jamie",
-      "name": "Jamie",
-      "token": "replace-with-a-different-long-random-token",
+      "id": "jane",
+      "name": "Jane",
+      "token": "replace-with-janes-long-random-token",
       "games": ["The Legend of Zelda", "Portal 2"],
       "startingGame": "The Legend of Zelda"
     }

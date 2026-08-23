@@ -1,5 +1,5 @@
-import { formatAge, priorityClass, sortPlayers, statusClass } from "./common.js?v=3.6";
-import { BroadcastSocket } from "./ws-client.js?v=3.6";
+import { formatAge, priorityClass, sortPlayers, statusClass } from "./common.js";
+import { BroadcastSocket } from "./ws-client.js";
 
 const login = document.querySelector("#login");
 const keyInput = document.querySelector("#key");

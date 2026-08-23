@@ -14,7 +14,8 @@ const CONFIG_PATH = process.env.CONFIG_PATH || path.join(__dirname,"config.json"
 const STATE_PATH = process.env.STATE_PATH || path.join(__dirname,"data","state.json");
 const PUBLIC_DIR = path.join(__dirname,"public");
 const WS_PATH = "/ws";
-const APP_VERSION = "3.6";
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8"));
+const APP_VERSION = packageJson.version;
 const STARTED_AT = new Date();
 
 let adminKey;
