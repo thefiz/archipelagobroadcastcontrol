@@ -7,8 +7,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test",
-    "check": "node --check server.js && node --check src/config.js && node --check src/connections.js && node --check src/persistence.js && node --check src/state.js && node --check src/http.js && node --check src/websocket.js && node --check public/common.js && node --check public/ws-client.js && node --check public/player.js && node --check public/dashboard.js && node --check public/compact.js && node --check public/multiview.js && node --check public/overlay.js"
+    "test": "npm run test:unit && npm run test:integration",
+    "check": "node --check server.js && node --check src/config.js && node --check src/connections.js && node --check src/persistence.js && node --check src/state.js && node --check src/http.js && node --check src/websocket.js && node --check public/common.js && node --check public/ws-client.js && node --check public/player.js && node --check public/dashboard.js && node --check public/compact.js && node --check public/multiview.js && node --check public/overlay.js",
+    "test:unit": "node --test test/config.test.js test/connections.test.js test/persistence.test.js test/state.test.js",
+    "test:integration": "node --test test/integration.test.js"
   },
   "engines": {
     "node": ">=18"
