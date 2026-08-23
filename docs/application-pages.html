@@ -29,7 +29,6 @@ a{color:var(--accent)}
 <tr><td><code>/player.html</code></td><td>Players</td><td>Game selection, production status, and on-air feedback.</td></tr>
 <tr><td><code>/dashboard.html</code></td><td>Production</td><td>Full player and production control.</td></tr>
 <tr><td><code>/compact.html</code></td><td>Production / hosts</td><td>640×360 call monitor for at-a-glance status.</td></tr>
-<tr><td><code>/multiview.html</code></td><td>Production</td><td>Metadata mockup for a status-aware multiview.</td></tr>
 <tr><td><code>/overlay.html</code></td><td>Graphics</td><td>Transparent player/game overlay.</td></tr>
 </table>
 
@@ -61,11 +60,6 @@ a{color:var(--accent)}
 <p>Soon calls flash briefly when first received. ASAP calls continue flashing until that request has been taken live. The display shows up to five rows and reports additional matching players as <code>+N MORE</code>.</p>
 </div>
 
-<div class="page">
-<h3><code>/multiview.html</code> — Status multiview</h3>
-<p>A metadata/layout mockup showing player name, game, production status, and air state in a tiled view.</p>
-<p>This page does not ingest gameplay video and is not a video router. It is intended as a reference or supplement for a production multiview.</p>
-</div>
 
 <div class="page">
 <h3><code>/overlay.html</code> — Player overlay</h3>
@@ -76,7 +70,7 @@ http://SERVER-IP:3000/overlay.html?id=john&amp;status=0</code></pre>
 </div>
 
 <h2>Real-time updates</h2>
-<p>The player, dashboard, compact, multiview, and overlay pages update through the server's WebSocket connection at <code>/ws</code>. The landing page does not use WebSocket.</p>
+<p>The player, dashboard, compact, and overlay pages update through the server's WebSocket connection at <code>/ws</code>. The landing page does not use WebSocket.</p>
 
 <p>For message formats, authentication, HTTP endpoints, and production automation, see the <a href="api-reference.html">API Reference</a>.</p>
 </main></body>

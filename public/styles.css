@@ -154,11 +154,6 @@ select, input {
   padding: 8px 10px;
 }
 .small-button:hover { border-color: var(--accent); }
-.multiview {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-}
 .tile {
   aspect-ratio: 16 / 9;
   position: relative;
@@ -208,11 +203,11 @@ select, input {
 .hidden { display: none !important; }
 
 @media (max-width: 850px) {
-  .multiview { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  
 }
 @media (max-width: 620px) {
   .status-grid { grid-template-columns: 1fr; }
-  .multiview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  
   .shell { width: min(100% - 20px, 1100px); padding-top: 14px; }
 }
 
