@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Production Status</title>
+  <link rel="stylesheet" href="/compact.css">
+  <link rel="stylesheet" href="/compact-static.css">
+</head>
+<body>
+  <main class="frame">
+    <header class="topbar">
+      <div id="modeLabel" class="mode-label">CALLS</div>
+      <div id="count" class="count">0</div>
+    </header>
+    <section id="queue" class="queue" aria-live="polite"></section>
+    <footer class="footer">
+      <span id="connection">CONNECTING</span>
+      <span id="overflow"></span>
+    </footer>
+  </main>
+  <script type="module" src="/compact.js"></script>
+</body>
+</html>
