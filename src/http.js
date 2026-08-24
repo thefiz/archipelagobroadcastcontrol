@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createServer } from "node:http";
+import { safeCompare } from "./config.js";
 
 const MIME_TYPES = {
   ".html":"text/html; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8",
@@ -15,7 +16,42 @@ function sendJson(res, statusCode, data, { cors = false, head = false } = {}) {
   res.end(head ? undefined : JSON.stringify(data));
 }
 
-export function createHttpServer({ publicDir, stateManager, snapshot, appVersion, wsPath }) {
+function restoreState(target, previousState) {
+  for (const key of Object.keys(target)) delete target[key];
+  Object.assign(target, previousState);
+}
+
+function playerIdFromBearer(req, stateManager) {
+  const authorization = req.headers.authorization;
+  if (typeof authorization !== "string" || !authorization.startsWith("Bearer ")) return null;
+  const token = authorization.slice(7);
+  for (const [playerId, definition] of stateManager.playerDefinitions) {
+    if (safeCompare(token, definition.token)) return playerId;
+  }
+  return null;
+}
+
+function readJsonBody(req, maxBytes = 8192) {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk) => {
+      body += chunk;
+      if (Buffer.byteLength(body, "utf8") > maxBytes) {
+        reject(new Error("Request body is too large."));
+        req.destroy();
+      }
+    });
+    req.on("end", () => {
+      if (!body) return resolve({});
+      try { resolve(JSON.parse(body)); }
+      catch { reject(new Error("Request body must be valid JSON.")); }
+    });
+    req.on("error", reject);
+  });
+}
+
+export function createHttpServer({ publicDir, stateManager, snapshot, appVersion, wsPath, onStateChanged }) {
   function serveStatic(req, res) {
     let pathname;
     try { pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname); }
@@ -32,9 +68,33 @@ export function createHttpServer({ publicDir, stateManager, snapshot, appVersion
     });
   }
 
-  return createServer((req,res) => {
-    if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405,{Allow:"GET, HEAD"}); res.end(); return; }
+  return createServer(async (req,res) => {
     const pathname = new URL(req.url,"http://localhost").pathname;
+
+    if (pathname === "/api/player/status" && req.method === "POST") {
+      const playerId = playerIdFromBearer(req, stateManager);
+      if (!playerId) return sendJson(res,401,{ok:false,error:"Invalid player token."});
+
+      let body;
+      try { body = await readJsonBody(req); }
+      catch (error) { return sendJson(res,400,{ok:false,error:error.message}); }
+
+      const previousState = structuredClone(stateManager.state);
+      const result = stateManager.setPlayerStatus(playerId, body.status);
+      if (!result.ok) return sendJson(res,400,result);
+
+      try { stateManager.persist(); }
+      catch (error) {
+        restoreState(stateManager.state, previousState);
+        console.error(error.message);
+        return sendJson(res,500,{ok:false,error:"Could not persist server state."});
+      }
+
+      onStateChanged?.();
+      return sendJson(res,200,{ok:true,player:stateManager.safePlayerState(playerId)});
+    }
+
+    if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405,{Allow:"GET, HEAD"}); res.end(); return; }
     const head = req.method === "HEAD";
     if (pathname === "/api/config") return sendJson(res,200,stateManager.publicConfig(),{head});
     if (pathname === "/api/state") return sendJson(res,200,snapshot(),{head});

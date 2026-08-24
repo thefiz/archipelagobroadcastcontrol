@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Archipelago Broadcast Control — API Reference v3.6</title>
+<title>Archipelago Broadcast Control — API Reference</title>
 <style>
 :root{--bg:#f5f7fa;--panel:#fff;--text:#172033;--muted:#5f6b7a;--border:#d9e0e8;--accent:#2457d6;--code:#0f172a;--code-text:#e5eefc;--purple:#6d4aff;--green:#0f766e}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
@@ -19,7 +19,7 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <body><main class="wrap">
 <header>
 <h1>API Reference</h1>
-<p class="muted">Archipelago Broadcast Control v3.6</p>
+<p class="muted">Archipelago Broadcast Control v0.3.7</p>
 <p>HTTP endpoints provide read-only state and graphics data. The WebSocket interface provides real-time state and production control.</p>
 </header>
 
@@ -92,7 +92,17 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <tr><td><span class="tag get">GET</span><code>/api/lower-thirds/live</code></td><td>The current live player, or <code>player: null</code>.</td></tr>
 <tr><td><span class="tag get">GET</span><code>/api/lower-thirds/{playerId}</code></td><td>Graphics-friendly data for one player. Unknown IDs return 404.</td></tr>
 <tr><td><span class="tag get">GET</span><code>/health</code></td><td>Basic health/discovery data including player count and WebSocket path.</td></tr>
+<tr><td><span class="tag ws">POST</span><code>/api/player/status</code></td><td>Set the authenticated player's production status using a bearer token.</td></tr>
 </table>
+
+<h3>Player status control</h3>
+<p><code>POST /api/player/status</code> is intended for simple player-side integrations that cannot keep an authenticated WebSocket connection open, such as Stream Deck HTTP-request actions.</p>
+<pre><code>POST /api/player/status
+Authorization: Bearer PLAYER_TOKEN
+Content-Type: application/json
+
+{"status":"asap"}</code></pre>
+<p>The token identifies the player. <code>status</code> accepts <code>normal</code>, <code>soon</code>, <code>asap</code>, or <code>downtime</code>. A successful request returns the updated player state and broadcasts the same state change to connected WebSocket clients.</p>
 
 <h3>Lower-third player shape</h3>
 <pre><code>{
@@ -203,6 +213,20 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <tr><td><code>Binary messages are not supported.</code></td><td>A binary WebSocket frame was sent.</td></tr>
 </table>
 <p>The server uses WebSocket ping/pong heartbeat handling to detect dead clients.</p>
+</section>
+
+<section id="streamdeck">
+<h2>Stream Deck HTTP control</h2>
+<p>A generic HTTP Request action can change a player's status without Companion or a persistent WebSocket connection.</p>
+<table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Method</td><td><code>POST</code></td></tr>
+<tr><td>URL</td><td><code>http://SERVER-IP:3000/api/player/status</code></td></tr>
+<tr><td>Header</td><td><code>Authorization: Bearer PLAYER_TOKEN</code></td></tr>
+<tr><td>Header</td><td><code>Content-Type: application/json</code></td></tr>
+<tr><td>Body</td><td><code>{"status":"asap"}</code></td></tr>
+</table>
+<p>Create separate buttons by changing the body to <code>normal</code>, <code>soon</code>, <code>asap</code>, or <code>downtime</code>.</p>
 </section>
 
 <section id="companion">

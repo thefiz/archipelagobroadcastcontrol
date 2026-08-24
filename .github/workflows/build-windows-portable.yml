@@ -6,7 +6,7 @@ on:
       ref:
         description: "Branch or tag to package"
         required: true
-        default: "v0.3.6"
+        default: "v0.3.7"
 
 permissions:
   contents: read

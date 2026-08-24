@@ -109,16 +109,13 @@ function renderHealth(snapshot) {
       : `${configured - connected} of ${configured} player control page${configured - connected === 1 ? " is" : "s are"} disconnected.`;
 }
 
-function updateStatusAges() {
-  for (const element of dashboard.querySelectorAll("[data-status-set-at]")) {
-    element.textContent = `status age ${formatAge(element.dataset.statusSetAt)}`;
-  }
-}
+function render(snapshot) {
+  latestSnapshot = snapshot;
+  if (!authenticated) return;
 
-function renderPlayers(players) {
+  renderHealth(snapshot);
   dashboard.replaceChildren();
-
-  for (const player of sortPlayers(players)) {
+  for (const player of sortPlayers(snapshot.players)) {
     const card = document.createElement("article");
     card.className = `card player-card ${priorityClass(player.statusDefinition.priority)}${player.connected ? "" : " disconnected"}`;
 
@@ -153,29 +150,11 @@ function renderPlayers(players) {
     const details = document.createElement("p");
     details.className = player.connected ? "muted" : "offline-detail";
     details.style.margin = "12px 0 0";
-
-    const detailItems = [];
-    const connectionDetail = document.createElement("span");
-    connectionDetail.textContent = player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE";
-    detailItems.push(connectionDetail);
-
-    if (player.statusSetAt) {
-      const age = document.createElement("span");
-      age.dataset.statusSetAt = player.statusSetAt;
-      age.textContent = `status age ${formatAge(player.statusSetAt)}`;
-      detailItems.push(age);
-    }
-
-    if (player.airState !== "off") {
-      const air = document.createElement("span");
-      air.textContent = player.airState.toUpperCase();
-      detailItems.push(air);
-    }
-
-    detailItems.forEach((item, index) => {
-      if (index) details.append(document.createTextNode(" • "));
-      details.append(item);
-    });
+    details.textContent = [
+      player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
+      player.statusSetAt ? `status age ${formatAge(player.statusSetAt)}` : null,
+      player.airState !== "off" ? player.airState.toUpperCase() : null
+    ].filter(Boolean).join(" • ");
 
     const controls = document.createElement("div");
     controls.className = "controls";
@@ -198,9 +177,7 @@ function renderPlayers(players) {
     panic.textContent = "Panic reset";
     panic.title = "Set this player off-air and return their status to Normal. Current game is preserved.";
     panic.addEventListener("click", async () => {
-      if (!confirm(`Panic reset ${player.name}?
-
-This will set them OFF AIR and return their status to Normal. Their current game will be preserved.`)) return;
+      if (!confirm(`Panic reset ${player.name}?\n\nThis will set them OFF AIR and return their status to Normal. Their current game will be preserved.`)) return;
       const result = await sendAdmin("admin.player.panic", { playerId: player.id });
       if (result.ok) controlNotice.textContent = `${player.name} panic reset completed.`;
     });
@@ -209,14 +186,6 @@ This will set them OFF AIR and return their status to Normal. Their current game
     card.append(top, details, controls);
     dashboard.append(card);
   }
-}
-
-function render(snapshot) {
-  latestSnapshot = snapshot;
-  if (!authenticated) return;
-
-  renderHealth(snapshot);
-  renderPlayers(snapshot.players);
 }
 
 async function authenticate() {
@@ -264,7 +233,8 @@ resetEventButton.addEventListener("click", async () => {
 });
 
 setInterval(() => {
-  if (!latestSnapshot || !authenticated) return;
-  renderHealth(latestSnapshot);
-  updateStatusAges();
+  if (latestSnapshot) {
+    renderHealth(latestSnapshot);
+    render(latestSnapshot);
+  }
 }, 1000);

@@ -55,7 +55,10 @@ function snapshot() {
   };
 }
 
-const server=createHttpServer({publicDir:PUBLIC_DIR,stateManager,snapshot,appVersion:APP_VERSION,wsPath:WS_PATH});
+const server=createHttpServer({
+  publicDir:PUBLIC_DIR, stateManager, snapshot, appVersion:APP_VERSION, wsPath:WS_PATH,
+  onStateChanged: () => websocketApi?.broadcastSnapshot()
+});
 websocketApi=attachWebSocket({server,wsPath:WS_PATH,stateManager,adminKey,snapshot});
 
 setInterval(()=>{

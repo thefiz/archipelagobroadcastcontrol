@@ -15,9 +15,9 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -25,7 +25,5 @@ jobs:
         run: npm ci
       - name: Syntax checks
         run: npm run check
-      - name: Unit tests
-        run: npm run test:unit
-      - name: Integration tests
-        run: npm run test:integration
+      - name: Tests
+        run: npm test

@@ -1,0 +1,45 @@
+/*
+ * Optional non-flashing theme for the compact production monitor.
+ *
+ * Load this file AFTER compact.css:
+ *
+ *   <link rel="stylesheet" href="compact.css">
+ *   <link rel="stylesheet" href="compact-static.css">
+ *
+ * This leaves the normal compact view unchanged unless this stylesheet
+ * is explicitly included.
+ */
+
+/* Disable all attention animations. */
+.row.asap.calling,
+.row.soon.new-call {
+  animation: none;
+}
+
+/*
+ * Use the same background colors that the default flashing animations
+ * use during their highlighted state.
+ */
+.row.asap {
+  background: #5b1111;
+  border-color: var(--asap);
+  border-left-color: var(--asap);
+}
+
+.row.soon {
+  background: #4b3d0c;
+  border-color: var(--soon);
+  border-left-color: var(--soon);
+}
+
+/*
+ * Preserve the existing "taken live" distinction for an ASAP request
+ * that has already been acknowledged.
+ */
+.row.asap.taken-live {
+  background: #321010;
+  border-color: var(--asap);
+  border-left-color: var(--asap);
+}
+
+/* Normal and BK rows retain their standard compact-view appearance. */

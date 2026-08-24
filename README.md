@@ -23,7 +23,7 @@ Players report their current game and whether something worth showing is coming 
 - Player-selectable current game and production status
 - Stand By, Live, and Off Air feedback
 - Production dashboard and 640×360 compact call monitor
-- HTTP endpoints for graphics and monitoring
+- HTTP endpoints for graphics, monitoring, and simple player controls
 - WebSocket control for production automation and Bitfocus Companion
 - Persistent state across server restarts
 

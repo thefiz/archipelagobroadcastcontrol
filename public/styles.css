@@ -154,35 +154,6 @@ select, input {
   padding: 8px 10px;
 }
 .small-button:hover { border-color: var(--accent); }
-.tile {
-  aspect-ratio: 16 / 9;
-  position: relative;
-  overflow: hidden;
-  border: 3px solid var(--border);
-  background:
-    linear-gradient(135deg, #202833, #0f1319);
-}
-.tile.priority-3 { border-color: var(--danger); }
-.tile.priority-2 { border-color: var(--warn); }
-.tile.priority--1 { opacity: .58; }
-.tile-label {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 8px 10px;
-  background: linear-gradient(transparent, rgba(0,0,0,.9));
-}
-.tile-name { font-weight: 800; }
-.tile-game { font-size: .85rem; }
-.tile-status {
-  position: absolute;
-  top: 7px;
-  left: 7px;
-}
-.tile-air {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-}
 .overlay {
   width: 100vw;
   height: 100vh;
@@ -202,12 +173,8 @@ select, input {
 .overlay-status { margin-top: 7px; font-weight: 800; }
 .hidden { display: none !important; }
 
-@media (max-width: 850px) {
-  
-}
 @media (max-width: 620px) {
   .status-grid { grid-template-columns: 1fr; }
-  
   .shell { width: min(100% - 20px, 1100px); padding-top: 14px; }
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.7
+
+- Added token-authenticated HTTP status control for player integrations such as Stream Deck.
+- Added an optional non-flashing style for the compact monitor.
+- Improved configuration validation and version handling.
+
 ## 0.3.6
 
 - Improved reliability around server startup, saved state, and player connections.
