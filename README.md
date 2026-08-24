@@ -31,7 +31,7 @@ Players report their current game and whether something worth showing is coming 
 
 ### Windows
 
-Download the Windows x64 portable package from **Releases** and extract it. Node.js, npm, and Git are included or not required on the event computer.
+Download the Windows x64 portable package from **Releases** and extract it. The package includes its own Node.js runtime, so Node.js, npm, and Git do not need to be installed on the event computer.
 
 1. Copy `config.example.json` to `config.json`.
 2. Add the event roster, games, and player tokens.

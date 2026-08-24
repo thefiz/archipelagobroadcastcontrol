@@ -11,7 +11,7 @@
 p{margin:8px 0 12px}.muted{color:var(--muted)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}p code,li code,td code{background:#edf1f6;padding:2px 5px;border-radius:4px}
 pre{background:var(--code);color:var(--code-text);padding:15px 17px;border-radius:8px;overflow:auto;line-height:1.45}
 table{width:100%;border-collapse:collapse;margin:12px 0 22px;font-size:14px}th,td{border:1px solid var(--border);padding:9px 11px;text-align:left;vertical-align:top}th{background:#eef2f6}
-.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:5px;padding:3px 6px;margin-right:6px}.get{background:#dff5ef;color:var(--green)}.ws{background:#eee9ff;color:#5638c8}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:5px;padding:3px 6px;margin-right:6px}.get{background:#dff5ef;color:var(--green)}.post{background:#fff0d8;color:#9a4f00}.ws{background:#eee9ff;color:#5638c8}
 .note{border-left:3px solid var(--accent);padding:9px 12px;background:#eef3ff;margin:14px 0}.toc{columns:2;padding-left:20px}.toc li{margin:4px 0}
 a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 </style>
@@ -20,7 +20,7 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <header>
 <h1>API Reference</h1>
 <p class="muted">Archipelago Broadcast Control v0.3.7</p>
-<p>HTTP endpoints provide read-only state and graphics data. The WebSocket interface provides real-time state and production control.</p>
+<p>The HTTP API provides state and graphics data, plus authenticated player status updates. The WebSocket API provides real-time state and production control.</p>
 </header>
 
 <h2>Contents</h2>
@@ -32,6 +32,7 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <li><a href="#behavior">Important behavior</a></li>
 <li><a href="#events">Server messages</a></li>
 <li><a href="#errors">Errors</a></li>
+<li><a href="#streamdeck">Stream Deck HTTP control</a></li>
 <li><a href="#companion">Bitfocus Companion</a></li>
 <li><a href="#graphics">Graphics</a></li>
 </ul>
@@ -40,7 +41,8 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <h2>Connection & authentication</h2>
 <table>
 <tr><th>Interface</th><th>Address</th><th>Authentication</th></tr>
-<tr><td>HTTP</td><td><code>http://SERVER-IP:3000</code></td><td>None for documented read-only endpoints</td></tr>
+<tr><td>HTTP read-only</td><td><code>http://SERVER-IP:3000</code></td><td>None</td></tr>
+<tr><td>HTTP player status</td><td><code>http://SERVER-IP:3000/api/player/status</code></td><td><code>Authorization: Bearer PLAYER_TOKEN</code></td></tr>
 <tr><td>WebSocket</td><td><code>ws://SERVER-IP:3000/ws</code></td><td>Depends on message type</td></tr>
 </table>
 <p>WebSocket authentication is connection-scoped. A reconnect must authenticate again before sending protected messages.</p>
@@ -83,7 +85,7 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 
 <section id="http">
 <h2>HTTP endpoints</h2>
-<p>These endpoints accept <code>GET</code> and <code>HEAD</code>. JSON responses use <code>Cache-Control: no-store</code>. Lower-third endpoints also allow cross-origin reads.</p>
+<p>Read-only API endpoints accept <code>GET</code> and <code>HEAD</code>. Player status control uses <code>POST /api/player/status</code>. JSON API responses use <code>Cache-Control: no-store</code>. Lower-third endpoints also allow cross-origin reads.</p>
 <table>
 <tr><th>Endpoint</th><th>Response</th></tr>
 <tr><td><span class="tag get">GET</span><code>/api/config</code></td><td>Public event configuration, with player tokens removed.</td></tr>
@@ -92,7 +94,7 @@ a{color:var(--accent)}@media(max-width:700px){.toc{columns:1}h1{font-size:30px}}
 <tr><td><span class="tag get">GET</span><code>/api/lower-thirds/live</code></td><td>The current live player, or <code>player: null</code>.</td></tr>
 <tr><td><span class="tag get">GET</span><code>/api/lower-thirds/{playerId}</code></td><td>Graphics-friendly data for one player. Unknown IDs return 404.</td></tr>
 <tr><td><span class="tag get">GET</span><code>/health</code></td><td>Basic health/discovery data including player count and WebSocket path.</td></tr>
-<tr><td><span class="tag ws">POST</span><code>/api/player/status</code></td><td>Set the authenticated player's production status using a bearer token.</td></tr>
+<tr><td><span class="tag post">POST</span><code>/api/player/status</code></td><td>Set the authenticated player's production status using a bearer token.</td></tr>
 </table>
 
 <h3>Player status control</h3>
