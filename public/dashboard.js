@@ -19,9 +19,21 @@ let adminKey = "";
 let latestSnapshot = null;
 let websocketConnected = false;
 
+function updateLoginConnectionState(connected) {
+  loginButton.disabled = !connected;
+  loginButton.textContent = connected ? "Connect" : "Connecting…";
+
+  if (!authenticated) {
+    loginNotice.textContent = connected
+      ? "WebSocket connected. Enter the production key."
+      : "Connecting to server…";
+  }
+}
+
 const socket = new BroadcastSocket({
   onOpen: async () => {
     websocketConnected = true;
+    updateLoginConnectionState(true);
     serverAlert.classList.add("hidden");
     document.body.classList.remove("server-unreachable");
     if (!authenticated || !adminKey) return;
@@ -39,6 +51,7 @@ const socket = new BroadcastSocket({
   },
   onClose: () => {
     websocketConnected = false;
+    updateLoginConnectionState(false);
     serverAlert.classList.remove("hidden");
     document.body.classList.add("server-unreachable");
     renderHealth(latestSnapshot);
@@ -216,6 +229,11 @@ function render(snapshot) {
 }
 
 async function authenticate() {
+  if (!websocketConnected) {
+    updateLoginConnectionState(false);
+    return;
+  }
+
   const key = keyInput.value;
   const result = await socket.request("auth.admin", { key });
   if (!result.ok) {
@@ -231,6 +249,8 @@ async function authenticate() {
   healthPanel.classList.remove("hidden");
   render(result.state);
 }
+
+updateLoginConnectionState(false);
 
 loginButton.addEventListener("click", authenticate);
 keyInput.addEventListener("keydown", (event) => {
