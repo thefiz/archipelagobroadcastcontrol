@@ -92,7 +92,23 @@ select, input {
   align-items: end;
 }
 .toolbar > * { flex: 1 1 220px; }
-.player-card { position: relative; }
+.player-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.player-identity { min-width: 0; }
+.player-identity h2 {
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.player-current-game {
+  min-height: 2.7em;
+  overflow-wrap: anywhere;
+}
 .player-card.priority-3 { border-color: var(--danger); }
 .player-card.priority-2 { border-color: var(--warn); }
 .player-card.priority--1 { opacity: .68; }
@@ -102,17 +118,12 @@ select, input {
   background: color-mix(in srgb, var(--danger) 9%, var(--panel));
 }
 .player-card.disconnected.priority--1 { opacity: 1; }
-.player-card.disconnected h2::after {
-  content: " • OFFLINE";
-  color: var(--danger);
-  font-size: .58em;
-  letter-spacing: .04em;
-}
 .player-badges {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  min-height: 30px;
 }
 .offline-detail {
   color: #ff8b84;
@@ -120,9 +131,8 @@ select, input {
 }
 .card-top {
   display: flex;
-  gap: 12px;
-  justify-content: space-between;
-  align-items: start;
+  flex-direction: column;
+  gap: 8px;
 }
 .badge {
   display: inline-flex;
@@ -145,7 +155,27 @@ select, input {
   color: white;
   letter-spacing: .035em;
 }
-.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.game-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+.game-select {
+  min-width: 0;
+  padding: 8px 10px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+@media (max-width: 420px) {
+  .game-control { grid-template-columns: 1fr; }
+}
 .small-button {
   border: 1px solid var(--border);
   background: var(--panel-2);
@@ -267,4 +297,126 @@ body.server-unreachable #modeControls button {
 }
 body.server-unreachable #healthConnection {
   color: var(--danger);
+}
+
+
+/* Dense production dashboard layout.
+   Keeps the dashboard readable while reducing vertical space per player card. */
+.players-grid {
+  gap: 10px;
+}
+
+.player-card {
+  padding: 11px 12px 10px;
+  gap: 7px;
+  min-height: 0;
+}
+
+.player-card .player-name {
+  font-size: clamp(18px, 1.45vw, 23px);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.player-card .player-game,
+.player-card .game {
+  font-size: 14px;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.player-card .card-badges,
+.player-card .player-badges {
+  gap: 5px;
+  margin-top: 1px;
+}
+
+.player-card .badge {
+  padding: 3px 7px;
+  font-size: 11px;
+  line-height: 1.15;
+}
+
+.player-card .offline-detail,
+.player-card .player-offline,
+.player-card .connection-detail {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+/* DISCONNECTED badge + card treatment already communicate this state. */
+.player-card.disconnected .offline-detail,
+.player-card.disconnected .player-offline,
+.player-card.disconnected .connection-detail {
+  display: none;
+}
+
+.player-card .game-control,
+.player-card .game-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.player-card select,
+.player-card button {
+  min-height: 31px;
+  padding: 5px 9px;
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.player-card select {
+  min-width: 0;
+  width: 100%;
+}
+
+.player-card .controls,
+.player-card .player-controls,
+.player-card .control-row {
+  gap: 6px;
+}
+
+.player-card .controls {
+  margin-top: 1px;
+}
+
+.player-card .controls button,
+.player-card .player-controls button {
+  white-space: nowrap;
+}
+
+/* Favor compact labels in the admin dashboard. */
+.player-card button[data-action="standby"]::first-letter,
+.player-card button[data-action="live"]::first-letter,
+.player-card button[data-action="off"]::first-letter {
+  text-transform: uppercase;
+}
+
+@media (min-width: 1180px) {
+  .players-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1600px) {
+  .players-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+
+/* Four-column dashboard layout on standard 1080p-width production displays. */
+@media (min-width: 1200px) {
+  #dashboard,
+  .dashboard-grid,
+  .player-grid,
+  .players-grid,
+  .cards,
+  .card-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

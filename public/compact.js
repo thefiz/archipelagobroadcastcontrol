@@ -36,7 +36,7 @@ function sortPlayers(players) {
     const p = (priority[b.status] || 0) - (priority[a.status] || 0);
     if (p) return p;
     if (a.status === "asap" || a.status === "soon") {
-      return Date.parse(a.statusSetAt || 0) - Date.parse(b.statusSetAt || 0);
+      return Date.parse(b.statusSetAt || 0) - Date.parse(a.statusSetAt || 0);
     }
     return a.name.localeCompare(b.name);
   });
@@ -45,11 +45,12 @@ function sortPlayers(players) {
 function render() {
   if (!latest) return;
   const players = sortPlayers(visiblePlayers(latest.players));
-  const maxRows = 5;
-  const shown = players.slice(0, maxRows);
+  const shown = players;
   modeLabel.textContent = modeNames[mode] || mode.toUpperCase();
   count.textContent = players.length;
   queue.replaceChildren();
+  queue.classList.toggle("density-medium", shown.length >= 5 && shown.length <= 6);
+  queue.classList.toggle("density-dense", shown.length >= 7);
 
   if (shown.length === 0) {
     const empty = document.createElement("div");
@@ -57,6 +58,7 @@ function render() {
     empty.textContent = mode === "priority" ? "NO CALLS" : "NONE";
     queue.append(empty);
     queue.style.gridTemplateRows = "1fr";
+    queue.classList.remove("density-medium", "density-dense");
     overflow.textContent = "";
     return;
   }
@@ -112,7 +114,7 @@ function render() {
     queue.append(row);
   }
 
-  overflow.textContent = players.length > maxRows ? `+${players.length - maxRows} MORE` : "";
+  overflow.textContent = "";
 }
 
 new BroadcastSocket({

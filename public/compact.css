@@ -58,3 +58,68 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background:
   .row.asap.calling, .row.soon.new-call { animation: none; }
   .row.asap.calling { background: #5b1111; border-color: var(--asap); }
 }
+
+
+/* Dynamic density for a 640x360 compact monitor.
+   Row sizes are chosen so text remains inside each row at every count from 1-12. */
+.queue.density-medium {
+  gap: 2px;
+  padding: 3px 4px;
+}
+.queue.density-medium .row {
+  grid-template-columns: 72px minmax(0, 1fr) 50px;
+  gap: 6px;
+  padding: 1px 6px 1px 5px;
+  border-left-width: 7px;
+}
+.queue.density-medium .status {
+  font-size: 18px;
+}
+.queue.density-medium .player {
+  font-size: 20px;
+  line-height: 1;
+}
+.queue.density-medium .game {
+  margin-top: 0;
+  font-size: 10px;
+  line-height: 1;
+}
+.queue.density-medium .age {
+  font-size: 16px;
+}
+
+/* Seven or more rows use a single-line identity layout.
+   This prevents the game line from colliding with the next row. */
+.queue.density-dense {
+  gap: 2px;
+  padding: 3px 4px;
+}
+.queue.density-dense .row {
+  grid-template-columns: 56px minmax(0, 1fr) 38px;
+  gap: 5px;
+  padding: 0 5px 0 4px;
+  border-width: 1px;
+  border-left-width: 5px;
+}
+.queue.density-dense .status {
+  font-size: 14px;
+}
+.queue.density-dense .identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.queue.density-dense .player {
+  font-size: 16px;
+  line-height: 1;
+}
+.queue.density-dense .game {
+  margin-top: 0;
+  font-size: 10px;
+  line-height: 1;
+}
+.queue.density-dense .age {
+  font-size: 13px;
+}

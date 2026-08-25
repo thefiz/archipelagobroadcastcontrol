@@ -3,7 +3,8 @@
 ## 0.3.7
 
 - Added token-authenticated HTTP status control for player integrations such as Stream Deck.
-- Added an optional non-flashing style for the compact monitor.
+- Added dashboard game controls and improved player-card layout.
+- Added a dedicated non-flashing compact monitor page.
 - Improved configuration validation and version handling.
 
 ## 0.3.6

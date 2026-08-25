@@ -28,7 +28,8 @@ a{color:var(--accent)}
 <tr><td><code>/</code></td><td>Anyone</td><td>Links to the main application pages.</td></tr>
 <tr><td><code>/player.html</code></td><td>Players</td><td>Game selection, production status, and on-air feedback.</td></tr>
 <tr><td><code>/dashboard.html</code></td><td>Production</td><td>Full player and production control.</td></tr>
-<tr><td><code>/compact.html</code></td><td>Production / hosts</td><td>640×360 call monitor for at-a-glance status.</td></tr>
+<tr><td><code>/compact.html</code></td><td>Production / hosts</td><td>640×360 call monitor with flashing attention cues.</td></tr>
+<tr><td><code>/compact-noflash.html</code></td><td>Production / hosts</td><td>Non-flashing compact monitor with persistent ASAP/Soon highlighting.</td></tr>
 <tr><td><code>/overlay.html</code></td><td>Graphics</td><td>Transparent player/game overlay.</td></tr>
 </table>
 
@@ -44,7 +45,7 @@ a{color:var(--accent)}
 <div class="page">
 <h3><code>/dashboard.html</code> — Production dashboard</h3>
 <p>The dashboard is the main administrative view. It requires the production admin key.</p>
-<p>It shows player game/status/connection information and provides controls for Stand By, Live, Off Air, status clearing, panic reset, event reset, and compact-monitor mode. It also displays server and player connection health.</p>
+<p>It shows player game/status/connection information and provides controls for changing a player's current game, Stand By, Live, Off Air, status clearing, panic reset, event reset, and compact-monitor mode. It also displays server and player connection health.</p>
 </div>
 
 <div class="page">
@@ -58,7 +59,7 @@ a{color:var(--accent)}
 <tr><td><code>all</code></td><td>All players</td></tr>
 </table>
 <p>Soon calls flash briefly when first received. ASAP calls continue flashing until that request has been taken live. The display shows up to five rows and reports additional matching players as <code>+N MORE</code>.</p>
-<p>An optional <code>compact-static.css</code> override disables flashing and keeps ASAP/Soon rows highlighted instead. To use it, load <code>compact-static.css</code> after <code>compact.css</code> in <code>compact.html</code>.</p>
+<p>A non-flashing alternative is available at <code>/compact-noflash.html</code>; it uses the same layout but keeps ASAP/Soon rows highlighted instead of animating them.</p>
 </div>
 
 

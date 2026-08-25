@@ -123,12 +123,12 @@ function render(snapshot) {
     top.className = "card-top";
 
     const identity = document.createElement("div");
+    identity.className = "player-identity";
     const heading = document.createElement("h2");
     heading.textContent = player.name;
-    heading.style.marginBottom = "4px";
     const game = document.createElement("div");
     game.textContent = player.currentGame;
-    game.className = "muted";
+    game.className = "muted player-current-game";
     identity.append(heading, game);
 
     const badges = document.createElement("div");
@@ -149,12 +149,39 @@ function render(snapshot) {
 
     const details = document.createElement("p");
     details.className = player.connected ? "muted" : "offline-detail";
+    details.dataset.playerDetailsId = player.id;
     details.style.margin = "12px 0 0";
     details.textContent = [
       player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
       player.statusSetAt ? `status age ${formatAge(player.statusSetAt)}` : null,
       player.airState !== "off" ? player.airState.toUpperCase() : null
     ].filter(Boolean).join(" • ");
+
+    const gameControl = document.createElement("div");
+    gameControl.className = "game-control";
+
+    const gameSelect = document.createElement("select");
+    gameSelect.className = "game-select";
+    gameSelect.setAttribute("aria-label", `Current game for ${player.name}`);
+    for (const assignedGame of player.games) {
+      const option = document.createElement("option");
+      option.value = assignedGame;
+      option.textContent = assignedGame;
+      option.selected = assignedGame === player.currentGame;
+      gameSelect.append(option);
+    }
+
+    const changeGame = document.createElement("button");
+    changeGame.type = "button";
+    changeGame.className = "small-button";
+    changeGame.textContent = "Change game";
+    changeGame.disabled = player.games.length < 2;
+    changeGame.addEventListener("click", async () => {
+      if (gameSelect.value === player.currentGame) return;
+      const result = await sendAdmin("admin.player.game", { playerId: player.id, game: gameSelect.value });
+      if (result.ok) controlNotice.textContent = `${player.name} changed to ${gameSelect.value}.`;
+    });
+    gameControl.append(gameSelect, changeGame);
 
     const controls = document.createElement("div");
     controls.className = "controls";
@@ -183,7 +210,7 @@ function render(snapshot) {
     });
     controls.append(panic);
 
-    card.append(top, details, controls);
+    card.append(top, details, gameControl, controls);
     dashboard.append(card);
   }
 }
@@ -232,9 +259,23 @@ resetEventButton.addEventListener("click", async () => {
   if (result.ok) controlNotice.textContent = "Event state reset completed.";
 });
 
-setInterval(() => {
-  if (latestSnapshot) {
-    renderHealth(latestSnapshot);
-    render(latestSnapshot);
-  }
-}, 1000);
+
+function refreshDashboardTimers() {
+  if (!latestSnapshot) return;
+
+  renderHealth(latestSnapshot);
+
+  const playersById = new Map(latestSnapshot.players.map((player) => [player.id, player]));
+  document.querySelectorAll("[data-player-details-id]").forEach((element) => {
+    const player = playersById.get(element.dataset.playerDetailsId);
+    if (!player) return;
+
+    element.textContent = [
+      player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
+      player.statusSetAt ? `status age ${formatAge(player.statusSetAt)}` : null,
+      player.airState !== "off" ? player.airState.toUpperCase() : null
+    ].filter(Boolean).join(" • ");
+  });
+}
+
+setInterval(refreshDashboardTimers, 1000);
