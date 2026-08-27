@@ -1,13 +1,15 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { safeCompare } from "./config.js";
 import { connectedPlayerSockets, reassignPlayerConnection } from "./connections.js";
+import { buildCompanionFields } from "./companion.js";
 
 export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapshot }) {
   const wss = new WebSocketServer({ server, path: wsPath });
+  const companionFields = () => buildCompanionFields(stateManager.state.players);
 
   function send(ws, type, data = {}, requestId = undefined) {
     if (ws.readyState !== WebSocket.OPEN) return;
-    const message = { type, data };
+    const message = { type, data, ...companionFields() };
     if (requestId !== undefined) message.requestId = requestId;
     ws.send(JSON.stringify(message));
   }
@@ -15,7 +17,7 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
   const fail = (ws, id, error) => send(ws, "ack", { ok: false, error }, id);
 
   function broadcast(type, data = {}) {
-    const payload = JSON.stringify({ type, data });
+    const payload = JSON.stringify({ type, data, ...companionFields() });
     for (const client of wss.clients) {
       if (client.readyState === WebSocket.OPEN) client.send(payload);
     }

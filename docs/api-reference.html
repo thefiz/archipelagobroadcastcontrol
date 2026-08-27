@@ -233,7 +233,16 @@ Content-Type: application/json
 
 <section id="companion">
 <h2>Bitfocus Companion</h2>
-<p>Connect a Generic WebSocket connection to <code>ws://SERVER-IP:3000/ws</code>, then authenticate with <code>auth.admin</code>.</p>
+<p>Connect a Generic WebSocket connection to <code>ws://SERVER-IP:3000/ws</code>. Reading state does not require authentication. Production commands require <code>auth.admin</code>.</p>
+<p>Every server WebSocket message includes flat per-player fields at the top level for simple Companion feedbacks:</p>
+<pre><code>{
+  "andy_status": "asap",
+  "andy_air": "off",
+  "andy_game": "A Link to the Past",
+  "andy_connected": true
+}</code></pre>
+<p>The key uses the configured player ID, so Companion can use a JSON Path such as <code>andy_status</code> without array indexes. Available suffixes are <code>_status</code>, <code>_air</code>, <code>_game</code>, and <code>_connected</code>.</p>
+<p>To send production commands, authenticate once on the same persistent connection:</p>
 <pre><code>{"type":"auth.admin","data":{"key":"YOUR_ADMIN_KEY"}}</code></pre>
 <p>After authentication, the admin messages above can be sent directly from Companion actions.</p>
 </section>

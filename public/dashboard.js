@@ -156,7 +156,10 @@ function render(snapshot) {
 
     const status = document.createElement("span");
     status.className = `badge ${statusClass(player.status)}`;
-    status.textContent = player.statusDefinition.label;
+    status.dataset.playerStatusId = player.id;
+    status.textContent = player.statusSetAt
+      ? `${player.statusDefinition.label} · ${formatAge(player.statusSetAt)}`
+      : player.statusDefinition.label;
     badges.append(status);
     top.append(identity, badges);
 
@@ -165,10 +168,10 @@ function render(snapshot) {
     details.dataset.playerDetailsId = player.id;
     details.style.margin = "12px 0 0";
     details.textContent = [
-      player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
-      player.statusSetAt ? `status age ${formatAge(player.statusSetAt)}` : null,
+      !player.connected ? "PLAYER PAGE OFFLINE" : null,
       player.airState !== "off" ? player.airState.toUpperCase() : null
     ].filter(Boolean).join(" • ");
+    details.hidden = !details.textContent;
 
     const gameControl = document.createElement("div");
     gameControl.className = "game-control";
@@ -286,15 +289,22 @@ function refreshDashboardTimers() {
   renderHealth(latestSnapshot);
 
   const playersById = new Map(latestSnapshot.players.map((player) => [player.id, player]));
+  document.querySelectorAll("[data-player-status-id]").forEach((element) => {
+    const player = playersById.get(element.dataset.playerStatusId);
+    if (!player) return;
+    element.textContent = player.statusSetAt
+      ? `${player.statusDefinition.label} · ${formatAge(player.statusSetAt)}`
+      : player.statusDefinition.label;
+  });
+
   document.querySelectorAll("[data-player-details-id]").forEach((element) => {
     const player = playersById.get(element.dataset.playerDetailsId);
     if (!player) return;
-
     element.textContent = [
-      player.connected ? "Player page connected" : "PLAYER PAGE OFFLINE",
-      player.statusSetAt ? `status age ${formatAge(player.statusSetAt)}` : null,
+      !player.connected ? "PLAYER PAGE OFFLINE" : null,
       player.airState !== "off" ? player.airState.toUpperCase() : null
     ].filter(Boolean).join(" • ");
+    element.hidden = !element.textContent;
   });
 }
 
