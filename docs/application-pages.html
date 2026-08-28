@@ -35,7 +35,7 @@ a{color:var(--accent)}
 
 <div class="page">
 <h3><code>/player.html</code> — Player controls</h3>
-<p>Players can open <code>/player.html</code> and log in by choosing their player name and entering their token. The page also continues to support direct links containing the configured player ID and token:</p>
+<p>Players can open <code>/player.html</code> and log in by choosing their player name and entering their token. Successful logins are remembered on that browser and automatically restored on future visits. A Log out button clears the saved credentials. The page also continues to support direct links containing the configured player ID and token:</p>
 <pre><code>http://SERVER-IP:3000/player.html?id=john&amp;token=PLAYER_TOKEN</code></pre>
 <p>The page lets the player choose from their assigned games, change production status, and see whether production has marked them Off Air, Stand By, or Live.</p>
 <p>Changing games clears the previous production request. The page reconnects and re-authenticates automatically if its WebSocket connection drops.</p>

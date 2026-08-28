@@ -1,8 +1,11 @@
 import { qs } from "./common.js";
 import { BroadcastSocket } from "./ws-client.js";
 
-let activePlayerId = qs("id");
-let activeToken = qs("token");
+const STORAGE_PLAYER_ID = "archipelagoBroadcastPlayerId";
+const STORAGE_PLAYER_TOKEN = "archipelagoBroadcastPlayerToken";
+
+let activePlayerId = qs("id") || localStorage.getItem(STORAGE_PLAYER_ID);
+let activeToken = qs("token") || localStorage.getItem(STORAGE_PLAYER_TOKEN);
 
 const app = document.querySelector("#app");
 const errorBox = document.querySelector("#error");
@@ -18,6 +21,7 @@ const loginPlayer = document.querySelector("#loginPlayer");
 const loginToken = document.querySelector("#loginToken");
 const loginButton = document.querySelector("#loginButton");
 const loginNotice = document.querySelector("#loginNotice");
+const logoutButton = document.querySelector("#logoutButton");
 
 let currentPlayer = null;
 let statusDefinitions = {};
@@ -49,6 +53,33 @@ function hideLogin() {
 function clearCredentialQueryString() {
   if (!location.search) return;
   history.replaceState(null, "", location.pathname + location.hash);
+}
+
+function saveCredentials(playerId, token) {
+  localStorage.setItem(STORAGE_PLAYER_ID, playerId);
+  localStorage.setItem(STORAGE_PLAYER_TOKEN, token);
+}
+
+function clearSavedCredentials() {
+  localStorage.removeItem(STORAGE_PLAYER_ID);
+  localStorage.removeItem(STORAGE_PLAYER_TOKEN);
+}
+
+function resetPlayerSession() {
+  activePlayerId = "";
+  activeToken = "";
+  currentPlayer = null;
+  statusDefinitions = {};
+  clearSavedCredentials();
+
+  gameSelect.replaceChildren();
+  gameSelect.removeAttribute("data-player-id");
+  statuses.replaceChildren();
+  app.classList.add("hidden");
+  logoutButton.classList.add("hidden");
+  loginToken.value = "";
+
+  showLogin("Logged out.");
 }
 
 async function loadRoster() {
@@ -147,6 +178,14 @@ async function authenticate(playerId, token, { clearUrl = false } = {}) {
 
   if (!result.ok) {
     loginButton.disabled = false;
+
+    if (playerId === activePlayerId && token === activeToken) {
+      activePlayerId = "";
+      activeToken = "";
+      currentPlayer = null;
+      clearSavedCredentials();
+    }
+
     showLogin(result.error);
     loginToken.focus();
     loginToken.select();
@@ -155,6 +194,7 @@ async function authenticate(playerId, token, { clearUrl = false } = {}) {
 
   activePlayerId = playerId;
   activeToken = token;
+  saveCredentials(playerId, token);
   statusDefinitions = result.config.statuses;
 
   renderStatusButtons(socket);
@@ -163,6 +203,7 @@ async function authenticate(playerId, token, { clearUrl = false } = {}) {
   clearError();
   hideLogin();
   app.classList.remove("hidden");
+  logoutButton.classList.remove("hidden");
   statusNotice.textContent = "";
   loginButton.disabled = false;
 
@@ -212,6 +253,10 @@ loginToken.addEventListener("keydown", async (event) => {
     event.preventDefault();
     await authenticate(loginPlayer.value, loginToken.value);
   }
+});
+
+logoutButton.addEventListener("click", () => {
+  resetPlayerSession();
 });
 
 gameSelect.addEventListener("change", async () => {
