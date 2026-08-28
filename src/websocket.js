@@ -5,7 +5,15 @@ import { buildCompanionFields } from "./companion.js";
 
 export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapshot }) {
   const wss = new WebSocketServer({ server, path: wsPath });
-  const companionFields = () => buildCompanionFields(stateManager.state.players);
+  const companionFields = () => {
+    const state = snapshot();
+    return {
+      compactMode: state.compactMode,
+      currentLivePlayerId: state.system?.currentLivePlayerId ?? "",
+      currentLivePlayerName: state.system?.currentLivePlayerName ?? "",
+      ...buildCompanionFields(stateManager.state.players)
+    };
+  };
 
   function send(ws, type, data = {}, requestId = undefined) {
     if (ws.readyState !== WebSocket.OPEN) return;
