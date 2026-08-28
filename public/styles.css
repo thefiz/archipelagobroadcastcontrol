@@ -420,3 +420,17 @@ body.server-unreachable #healthConnection {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+
+.player-login {
+  width: min(460px, 100%);
+}
+.login-token-label {
+  margin-top: 14px;
+}
+.login-button {
+  width: 100%;
+  margin-top: 14px;
+  min-height: 44px;
+  font-weight: 750;
+}

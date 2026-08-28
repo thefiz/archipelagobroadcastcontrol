@@ -58,7 +58,7 @@ The server listens on port `3000` by default.
 
 `config.json` contains the player roster, assigned games, player tokens, and status definitions. A starting template is included as `config.example.json`.
 
-Player links use the configured ID and token:
+Players can open `/player.html` and log in with their player name and token. Direct links using the configured ID and token are also supported:
 
 ```text
 http://SERVER-IP:3000/player.html?id=john&token=PLAYER_TOKEN

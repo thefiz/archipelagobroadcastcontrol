@@ -15,6 +15,20 @@
 
     <div id="error" class="card hidden"></div>
 
+    <section id="playerLogin" class="card player-login hidden">
+      <h2>Player Login</h2>
+      <p class="muted">Choose your player name and enter your player token.</p>
+
+      <label for="loginPlayer">Player</label>
+      <select id="loginPlayer"></select>
+
+      <label for="loginToken" class="login-token-label">Token</label>
+      <input id="loginToken" type="password" autocomplete="current-password" spellcheck="false">
+
+      <button id="loginButton" type="button" class="small-button login-button">Log in</button>
+      <div id="loginNotice" class="notice" aria-live="polite"></div>
+    </section>
+
     <div id="app" class="grid hidden">
       <section class="card">
         <label for="game">Current game</label>

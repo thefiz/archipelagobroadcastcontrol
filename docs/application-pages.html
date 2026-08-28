@@ -35,11 +35,11 @@ a{color:var(--accent)}
 
 <div class="page">
 <h3><code>/player.html</code> — Player controls</h3>
-<p>Each player receives a link containing their configured player ID and token:</p>
+<p>Players can open <code>/player.html</code> and log in by choosing their player name and entering their token. The page also continues to support direct links containing the configured player ID and token:</p>
 <pre><code>http://SERVER-IP:3000/player.html?id=john&amp;token=PLAYER_TOKEN</code></pre>
 <p>The page lets the player choose from their assigned games, change production status, and see whether production has marked them Off Air, Stand By, or Live.</p>
 <p>Changing games clears the previous production request. The page reconnects and re-authenticates automatically if its WebSocket connection drops.</p>
-<div class="note">The token in a player URL is a credential. Player links should not be posted publicly.</div>
+<div class="note">Player tokens are credentials. Direct tokenized links should not be posted publicly. After a successful direct-link login, the page removes the credentials from the browser address bar.</div>
 </div>
 
 <div class="page">
