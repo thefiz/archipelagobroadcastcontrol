@@ -55,7 +55,7 @@ function systemStatus() {
     unattendedMode:stateManager.state.unattendedMode,
     unattendedTarget:stateManager.state.unattendedTarget || null,
     unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
-    eligibleRotationPlayers:players.filter((p)=>p.connected && p.rotationActive).length,
+    eligibleRotationPlayers:players.filter((p)=>p.connected && p.rotationActive && (stateManager.state.runtimeSettings.rotationValidStatuses || []).includes(p.status)).length,
     lastPersistAt:stateManager.getLastPersistAt()
   };
 }
@@ -135,7 +135,7 @@ function updateUnattendedTarget(now = Date.now()) {
   }
   asapOverride = null;
 
-  const eligible = players.filter((player) => player.connected && player.rotationActive);
+  const eligible = players.filter((player) => player.connected && player.rotationActive && (stateManager.state.runtimeSettings.rotationValidStatuses || []).includes(player.status));
   if (!eligible.length) {
     rotationIndex = -1;
     rotationTargetSince = 0;

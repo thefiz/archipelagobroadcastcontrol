@@ -489,3 +489,5 @@ body.server-unreachable #healthConnection {
   gap: 8px;
   margin-top: 8px;
 }
+
+#rotationValidStatuses{display:grid;gap:8px}.rotation-status-option{display:flex;gap:10px;align-items:center}.rotation-status-option input{width:auto}

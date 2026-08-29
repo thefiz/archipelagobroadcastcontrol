@@ -160,7 +160,7 @@ export function createHttpServer({ publicDir, stateManager, snapshot, appVersion
         enabled:stateManager.state.unattendedMode,
         target:stateManager.state.unattendedTarget || null,
         reason:stateManager.state.unattendedTargetReason || null,
-        eligiblePlayers:players.filter((player)=>player.connected && player.rotationActive).map((player)=>({
+        eligiblePlayers:players.filter((player)=>player.connected && player.rotationActive && (stateManager.state.runtimeSettings.rotationValidStatuses || []).includes(player.status)).map((player)=>({
           id:player.id,name:player.name
         }))
       },{head});

@@ -8,6 +8,7 @@ const asapOverrideSeconds = document.querySelector("#asapOverrideSeconds");
 const fallbackRotationSeconds = document.querySelector("#fallbackRotationSeconds");
 const fallbackTargets = document.querySelector("#fallbackTargets");
 const addFallbackTarget = document.querySelector("#addFallbackTarget");
+const rotationValidStatuses = document.querySelector("#rotationValidStatuses");
 const statusSettings = document.querySelector("#statusSettings");
 const saveButton = document.querySelector("#saveConfig");
 const reloadButton = document.querySelector("#reloadConfig");
@@ -60,6 +61,8 @@ function render(settings) {
   fallbackRotationSeconds.value = settings.fallbackRotationSeconds;
   fallbackTargets.replaceChildren();
   for (const target of settings.fallbackTargets || []) addFallbackRow(target);
+  rotationValidStatuses.replaceChildren();
+  for (const [key, definition] of Object.entries(settings.statuses)) { const option=document.createElement("label"); option.className="rotation-status-option"; const checkbox=document.createElement("input"); checkbox.type="checkbox"; checkbox.checked=(settings.rotationValidStatuses||[]).includes(key); checkbox.dataset.rotationStatus=key; const text=document.createElement("span"); text.textContent=`${definition.label} (${key})`; option.append(checkbox,text); rotationValidStatuses.append(option); }
   statusSettings.replaceChildren();
 
   for (const [key, definition] of Object.entries(settings.statuses)) {
@@ -125,6 +128,7 @@ async function save() {
     asapOverrideSeconds: Number(asapOverrideSeconds.value),
     fallbackRotationSeconds: Number(fallbackRotationSeconds.value),
     fallbackTargets: [...document.querySelectorAll("[data-fallback-target]")].map((input) => input.value.trim()),
+    rotationValidStatuses: [...document.querySelectorAll("[data-rotation-status]:checked")].map((input)=>input.dataset.rotationStatus),
     statuses
   };
 

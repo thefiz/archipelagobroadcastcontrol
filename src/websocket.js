@@ -18,6 +18,7 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
       asapOverrideSeconds: state.runtimeSettings?.asapOverrideSeconds ?? 180,
       fallbackRotationSeconds: state.runtimeSettings?.fallbackRotationSeconds ?? 120,
       fallbackTargetCount: state.runtimeSettings?.fallbackTargets?.length ?? 0,
+      rotationValidStatuses: (state.runtimeSettings?.rotationValidStatuses || []).join(","),
       ...Object.fromEntries(Object.entries(state.runtimeSettings?.statuses || {}).flatMap(([key, definition]) => [
         [`${key}_label`, definition.label],
         [`${key}_timeoutSeconds`, definition.expiresSeconds]

@@ -129,3 +129,7 @@ Companion flat fields include:
 
 - `fallbackRotationSeconds`
 - `fallbackTargetCount`
+
+## Rotation status eligibility
+
+A player is eligible only when connected, `rotationActive` is true, and their backend status is selected in `rotationValidStatuses`. Defaults are all configured statuses except `downtime`. This is editable on `/config.html`.

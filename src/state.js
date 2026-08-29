@@ -10,6 +10,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
       fallbackTargets: Array.isArray(runtimeDefaults.fallbackTargets) && runtimeDefaults.fallbackTargets.length
         ? [...runtimeDefaults.fallbackTargets]
         : ["fallback-1", "fallback-2"],
+      rotationValidStatuses: Object.keys(config.statuses).filter((key) => key !== "downtime"),
       statuses: Object.fromEntries(Object.entries(config.statuses).map(([key, definition]) => [key, {
         label: definition.label,
         expiresSeconds: definition.expiresSeconds
@@ -83,6 +84,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
       fallbackTargets: Array.isArray(persisted.runtimeSettings.fallbackTargets)
         ? persisted.runtimeSettings.fallbackTargets.filter((value) => typeof value === "string" && value.trim()).map((value) => value.trim())
         : [...defaults.fallbackTargets],
+      rotationValidStatuses: Array.isArray(persisted.runtimeSettings.rotationValidStatuses) ? persisted.runtimeSettings.rotationValidStatuses.filter((key) => Object.hasOwn(config.statuses, key)) : [...defaults.rotationValidStatuses],
       statuses: Object.fromEntries(Object.keys(config.statuses).map((key) => [key, {
         label: typeof savedStatuses[key]?.label === "string" ? savedStatuses[key].label : defaults.statuses[key].label,
         expiresSeconds: Number.isFinite(Number(savedStatuses[key]?.expiresSeconds))
@@ -312,6 +314,10 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
         targets.push(value);
       }
       next.fallbackTargets = targets;
+    }
+    if (Object.hasOwn(updates, "rotationValidStatuses")) {
+      if (!Array.isArray(updates.rotationValidStatuses)) return { ok: false, error: "rotationValidStatuses must be an array." };
+      const valid=[]; for (const key of updates.rotationValidStatuses) { if (!Object.hasOwn(config.statuses,key)) return {ok:false,error:`Unknown rotation status: ${key}`}; if(!valid.includes(key)) valid.push(key); } next.rotationValidStatuses=valid;
     }
     if (Object.hasOwn(updates, "statuses")) {
       if (!updates.statuses || typeof updates.statuses !== "object" || Array.isArray(updates.statuses)) return { ok: false, error: "statuses must be an object." };
