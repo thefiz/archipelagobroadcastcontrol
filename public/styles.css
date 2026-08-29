@@ -476,3 +476,16 @@ body.server-unreachable #healthConnection {
 .config-status-row { display:grid; grid-template-columns:110px minmax(0,1fr) 150px; gap:10px; align-items:center; margin-top:10px; }
 .config-key { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--muted); }
 @media (max-width:620px) { .config-grid,.config-status-row { grid-template-columns:1fr; } }
+
+.config-section-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.fallback-target-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 8px;
+}

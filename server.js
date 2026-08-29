@@ -34,7 +34,9 @@ const stateManager = createStateManager({
   persistedState: initialPersisted,
   runtimeDefaults: {
     rotationSeconds: Math.max(10, Number(process.env.UNATTENDED_ROTATION_SECONDS || 300)),
-    asapOverrideSeconds: Math.max(10, Number(process.env.UNATTENDED_ASAP_SECONDS || 180))
+    asapOverrideSeconds: Math.max(10, Number(process.env.UNATTENDED_ASAP_SECONDS || 180)),
+    fallbackRotationSeconds: Math.max(10, Number(process.env.UNATTENDED_FALLBACK_SECONDS || 120)),
+    fallbackTargets: ["fallback-1", "fallback-2"]
   },
   onPersist: (safeState) => writeJsonAtomic(STATE_PATH,safeState)
 });
@@ -80,6 +82,8 @@ websocketApi=attachWebSocket({server,wsPath:WS_PATH,stateManager,adminKey,snapsh
 
 let rotationIndex = -1;
 let rotationTargetSince = 0;
+let fallbackIndex = -1;
+let fallbackTargetSince = 0;
 let asapOverride = null;
 let lastAsapStamp = "";
 
@@ -106,6 +110,8 @@ function updateUnattendedTarget(now = Date.now()) {
     asapOverride = null;
     lastAsapStamp = "";
     rotationTargetSince = 0;
+    fallbackIndex = -1;
+    fallbackTargetSince = 0;
     return;
   }
 
@@ -132,9 +138,36 @@ function updateUnattendedTarget(now = Date.now()) {
   const eligible = players.filter((player) => player.connected && player.rotationActive);
   if (!eligible.length) {
     rotationIndex = -1;
-    rotationTargetSince = now;
-    return setUnattendedTarget("fallback", "fallback");
+    rotationTargetSince = 0;
+
+    const fallbackTargets = stateManager.state.runtimeSettings.fallbackTargets || [];
+    if (!fallbackTargets.length) {
+      fallbackIndex = -1;
+      fallbackTargetSince = now;
+      return setUnattendedTarget("fallback", "fallback");
+    }
+
+    const currentTarget = stateManager.state.unattendedTarget;
+    const currentIndex = fallbackTargets.indexOf(currentTarget);
+    const currentStillFallback = currentIndex >= 0 && stateManager.state.unattendedTargetReason === "fallback";
+
+    if (!currentStillFallback || !fallbackTargetSince) {
+      fallbackIndex = currentIndex >= 0 ? currentIndex : (fallbackIndex + 1) % fallbackTargets.length;
+      if (fallbackIndex < 0 || fallbackIndex >= fallbackTargets.length) fallbackIndex = 0;
+      fallbackTargetSince = now;
+      return setUnattendedTarget(fallbackTargets[fallbackIndex], "fallback");
+    }
+
+    if (now - fallbackTargetSince >= stateManager.state.runtimeSettings.fallbackRotationSeconds * 1000) {
+      fallbackIndex = (currentIndex + 1) % fallbackTargets.length;
+      fallbackTargetSince = now;
+      return setUnattendedTarget(fallbackTargets[fallbackIndex], "fallback");
+    }
+    return;
   }
+
+  fallbackIndex = -1;
+  fallbackTargetSince = 0;
 
   const currentTarget = stateManager.state.unattendedTarget;
   const currentIndex = eligible.findIndex((player) => player.id === currentTarget);

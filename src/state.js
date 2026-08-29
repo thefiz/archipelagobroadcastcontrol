@@ -6,6 +6,10 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
     return {
       rotationSeconds: Number(runtimeDefaults.rotationSeconds ?? 300),
       asapOverrideSeconds: Number(runtimeDefaults.asapOverrideSeconds ?? 180),
+      fallbackRotationSeconds: Number(runtimeDefaults.fallbackRotationSeconds ?? 120),
+      fallbackTargets: Array.isArray(runtimeDefaults.fallbackTargets) && runtimeDefaults.fallbackTargets.length
+        ? [...runtimeDefaults.fallbackTargets]
+        : ["fallback-1", "fallback-2"],
       statuses: Object.fromEntries(Object.entries(config.statuses).map(([key, definition]) => [key, {
         label: definition.label,
         expiresSeconds: definition.expiresSeconds
@@ -74,6 +78,11 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
         ? Number(persisted.runtimeSettings.rotationSeconds) : defaults.rotationSeconds,
       asapOverrideSeconds: Number.isFinite(Number(persisted.runtimeSettings.asapOverrideSeconds))
         ? Number(persisted.runtimeSettings.asapOverrideSeconds) : defaults.asapOverrideSeconds,
+      fallbackRotationSeconds: Number.isFinite(Number(persisted.runtimeSettings.fallbackRotationSeconds))
+        ? Number(persisted.runtimeSettings.fallbackRotationSeconds) : defaults.fallbackRotationSeconds,
+      fallbackTargets: Array.isArray(persisted.runtimeSettings.fallbackTargets)
+        ? persisted.runtimeSettings.fallbackTargets.filter((value) => typeof value === "string" && value.trim()).map((value) => value.trim())
+        : [...defaults.fallbackTargets],
       statuses: Object.fromEntries(Object.keys(config.statuses).map((key) => [key, {
         label: typeof savedStatuses[key]?.label === "string" ? savedStatuses[key].label : defaults.statuses[key].label,
         expiresSeconds: Number.isFinite(Number(savedStatuses[key]?.expiresSeconds))
@@ -282,6 +291,27 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
       const value = Number(updates.asapOverrideSeconds);
       if (!Number.isInteger(value) || value < 10 || value > 86400) return { ok: false, error: "asapOverrideSeconds must be an integer from 10 to 86400." };
       next.asapOverrideSeconds = value;
+    }
+    if (Object.hasOwn(updates, "fallbackRotationSeconds")) {
+      const value = Number(updates.fallbackRotationSeconds);
+      if (!Number.isInteger(value) || value < 10 || value > 86400) return { ok: false, error: "fallbackRotationSeconds must be an integer from 10 to 86400." };
+      next.fallbackRotationSeconds = value;
+    }
+    if (Object.hasOwn(updates, "fallbackTargets")) {
+      if (!Array.isArray(updates.fallbackTargets)) return { ok: false, error: "fallbackTargets must be an array." };
+      if (updates.fallbackTargets.length > 32) return { ok: false, error: "fallbackTargets cannot contain more than 32 entries." };
+      const targets = [];
+      const seen = new Set();
+      for (const raw of updates.fallbackTargets) {
+        const value = String(raw ?? "").trim();
+        if (!value) return { ok: false, error: "Fallback target names cannot be blank." };
+        if (value.length > 64) return { ok: false, error: "Fallback target names must be 64 characters or fewer." };
+        if (!/^[A-Za-z0-9_-]+$/.test(value)) return { ok: false, error: `Invalid fallback target "${value}". Use letters, numbers, hyphens, and underscores only.` };
+        if (seen.has(value)) return { ok: false, error: `Duplicate fallback target: ${value}` };
+        seen.add(value);
+        targets.push(value);
+      }
+      next.fallbackTargets = targets;
     }
     if (Object.hasOwn(updates, "statuses")) {
       if (!updates.statuses || typeof updates.statuses !== "object" || Array.isArray(updates.statuses)) return { ok: false, error: "statuses must be an object." };

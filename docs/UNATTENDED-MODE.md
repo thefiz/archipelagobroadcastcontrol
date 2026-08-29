@@ -108,3 +108,24 @@ Protected API:
 - `POST /api/admin/runtime-config`
 
 Both require `Authorization: Bearer ADMIN_KEY`.
+
+
+## Configurable fallback rotation
+
+When no normal rotation players are eligible, the server cycles through the configured fallback target IDs.
+
+The defaults are:
+
+- `fallback-1`
+- `fallback-2`
+
+The fallback scene duration defaults to 120 seconds.
+
+Both the fallback duration and target list are editable at `/config.html` and persist as runtime settings. Companion should map each logical fallback ID to an OBS scene.
+
+If the fallback target list is empty, the server emits the legacy target `fallback`.
+
+Companion flat fields include:
+
+- `fallbackRotationSeconds`
+- `fallbackTargetCount`

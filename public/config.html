@@ -31,8 +31,22 @@
           <input id="rotationSeconds" type="number" min="10" max="86400" step="1">
           <label for="asapOverrideSeconds">ASAP override duration</label>
           <input id="asapOverrideSeconds" type="number" min="10" max="86400" step="1">
+          <label for="fallbackRotationSeconds">Fallback scene duration</label>
+          <input id="fallbackRotationSeconds" type="number" min="10" max="86400" step="1">
         </div>
         <p class="muted" style="margin-top:12px">Values are in seconds and apply immediately to timers already in progress.</p>
+      </section>
+
+      <section class="card config-section">
+        <div class="config-section-heading">
+          <div>
+            <h2>Fallback Rotation Targets</h2>
+            <p class="muted">These are logical target IDs for Companion, not OBS scene names.</p>
+          </div>
+          <button id="addFallbackTarget" type="button" class="small-button">Add Target</button>
+        </div>
+        <div id="fallbackTargets"></div>
+        <p class="muted" style="margin-top:12px">If the list is empty, the server uses the legacy target <code>fallback</code>.</p>
       </section>
 
       <section class="card config-section">

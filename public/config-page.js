@@ -5,6 +5,9 @@ const loginButton = document.querySelector("#configLoginButton");
 const loginNotice = document.querySelector("#configLoginNotice");
 const rotationSeconds = document.querySelector("#rotationSeconds");
 const asapOverrideSeconds = document.querySelector("#asapOverrideSeconds");
+const fallbackRotationSeconds = document.querySelector("#fallbackRotationSeconds");
+const fallbackTargets = document.querySelector("#fallbackTargets");
+const addFallbackTarget = document.querySelector("#addFallbackTarget");
 const statusSettings = document.querySelector("#statusSettings");
 const saveButton = document.querySelector("#saveConfig");
 const reloadButton = document.querySelector("#reloadConfig");
@@ -28,10 +31,35 @@ async function api(path, options = {}) {
   return data;
 }
 
+function addFallbackRow(value = "") {
+  const row = document.createElement("div");
+  row.className = "fallback-target-row";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.maxLength = 64;
+  input.value = value;
+  input.placeholder = "fallback-1";
+  input.dataset.fallbackTarget = "true";
+  input.setAttribute("aria-label", "Fallback target ID");
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "small-button";
+  remove.textContent = "Remove";
+  remove.addEventListener("click", () => row.remove());
+
+  row.append(input, remove);
+  fallbackTargets.append(row);
+}
+
 function render(settings) {
   currentSettings = settings;
   rotationSeconds.value = settings.rotationSeconds;
   asapOverrideSeconds.value = settings.asapOverrideSeconds;
+  fallbackRotationSeconds.value = settings.fallbackRotationSeconds;
+  fallbackTargets.replaceChildren();
+  for (const target of settings.fallbackTargets || []) addFallbackRow(target);
   statusSettings.replaceChildren();
 
   for (const [key, definition] of Object.entries(settings.statuses)) {
@@ -95,6 +123,8 @@ async function save() {
   const payload = {
     rotationSeconds: Number(rotationSeconds.value),
     asapOverrideSeconds: Number(asapOverrideSeconds.value),
+    fallbackRotationSeconds: Number(fallbackRotationSeconds.value),
+    fallbackTargets: [...document.querySelectorAll("[data-fallback-target]")].map((input) => input.value.trim()),
     statuses
   };
 
@@ -111,6 +141,7 @@ async function save() {
   }
 }
 
+addFallbackTarget.addEventListener("click", () => addFallbackRow(`fallback-${document.querySelectorAll("[data-fallback-target]").length + 1}`));
 loginButton.addEventListener("click", authenticate);
 keyInput.addEventListener("keydown", (event) => { if (event.key === "Enter") authenticate(); });
 saveButton.addEventListener("click", save);
