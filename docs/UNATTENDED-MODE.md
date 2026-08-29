@@ -81,6 +81,7 @@ Global:
 Per player:
 
 - `<playerId>_rotationActive`
+- `<playerId>_live`
 
 Suggested Companion logic:
 

@@ -23,11 +23,13 @@ test("Companion fields use stable player-id keys", () => {
   assert.deepEqual(fields, {
     andy_status: "asap",
     andy_air: "live",
+    andy_live: true,
     andy_game: "A Link to the Past",
     andy_connected: true,
     andy_rotationActive: false,
     bird650_status: "soon",
     bird650_air: "off",
+    bird650_live: false,
     bird650_game: "Pokemon Emerald",
     bird650_connected: false,
     bird650_rotationActive: false
