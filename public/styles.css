@@ -468,3 +468,11 @@ body.server-unreachable #healthConnection {
 .overnight-card {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
+
+.config-link { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+.config-shell { width:min(760px, calc(100% - 32px)); }
+.config-section { margin-top:16px; }
+.config-grid { display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:10px 16px; align-items:center; }
+.config-status-row { display:grid; grid-template-columns:110px minmax(0,1fr) 150px; gap:10px; align-items:center; margin-top:10px; }
+.config-key { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--muted); }
+@media (max-width:620px) { .config-grid,.config-status-row { grid-template-columns:1fr; } }

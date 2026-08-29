@@ -32,6 +32,10 @@ const initialPersisted = readPersistedState(STATE_PATH,null);
 const stateManager = createStateManager({
   config,
   persistedState: initialPersisted,
+  runtimeDefaults: {
+    rotationSeconds: Math.max(10, Number(process.env.UNATTENDED_ROTATION_SECONDS || 300)),
+    asapOverrideSeconds: Math.max(10, Number(process.env.UNATTENDED_ASAP_SECONDS || 180))
+  },
   onPersist: (safeState) => writeJsonAtomic(STATE_PATH,safeState)
 });
 if (fs.existsSync(STATE_PATH)) stateManager.setLastPersistAt(fs.statSync(STATE_PATH).mtime.toISOString());
@@ -61,6 +65,7 @@ function snapshot() {
     unattendedMode:stateManager.state.unattendedMode,
     unattendedTarget:stateManager.state.unattendedTarget || null,
     unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
+    runtimeSettings:stateManager.runtimeSettingsSnapshot(),
     system:systemStatus(),
     players:Object.keys(stateManager.state.players).map(stateManager.safePlayerState)
   };
@@ -72,9 +77,6 @@ const server=createHttpServer({
 });
 websocketApi=attachWebSocket({server,wsPath:WS_PATH,stateManager,adminKey,snapshot});
 
-
-const ROTATION_SECONDS = Math.max(10, Number(process.env.UNATTENDED_ROTATION_SECONDS || 300));
-const ASAP_OVERRIDE_SECONDS = Math.max(10, Number(process.env.UNATTENDED_ASAP_SECONDS || 180));
 
 let rotationIndex = -1;
 let rotationTargetSince = 0;
@@ -118,11 +120,11 @@ function updateUnattendedTarget(now = Date.now()) {
     asapOverride = {
       playerId: newestAsap.id,
       startedAt: now,
-      expiresAt: now + ASAP_OVERRIDE_SECONDS * 1000
+      expiresAt: now + stateManager.state.runtimeSettings.asapOverrideSeconds * 1000
     };
   }
 
-  if (asapOverride && now < asapOverride.expiresAt) {
+  if (asapOverride && now < asapOverride.startedAt + stateManager.state.runtimeSettings.asapOverrideSeconds * 1000) {
     return setUnattendedTarget(asapOverride.playerId, "asap");
   }
   asapOverride = null;
@@ -145,7 +147,7 @@ function updateUnattendedTarget(now = Date.now()) {
     return setUnattendedTarget(eligible[rotationIndex].id, "rotation");
   }
 
-  if (now - rotationTargetSince >= ROTATION_SECONDS * 1000) {
+  if (now - rotationTargetSince >= stateManager.state.runtimeSettings.rotationSeconds * 1000) {
     rotationIndex = (currentIndex + 1) % eligible.length;
     rotationTargetSince = now;
     return setUnattendedTarget(eligible[rotationIndex].id, "rotation");

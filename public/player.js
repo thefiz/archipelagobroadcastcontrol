@@ -250,6 +250,15 @@ const socket = new BroadcastSocket({
 
   onMessage: (message) => {
     if (message.type !== "state.snapshot" || !activePlayerId) return;
+
+    if (message.data.runtimeSettings?.statuses) {
+      for (const [key, definition] of Object.entries(message.data.runtimeSettings.statuses)) {
+        if (statusDefinitions[key]) statusDefinitions[key] = { ...statusDefinitions[key], ...definition };
+        const button = statuses.querySelector(`[data-status="${key}"]`);
+        if (button) button.textContent = definition.label;
+      }
+    }
+
     const player = message.data.players.find((entry) => entry.id === activePlayerId);
     if (player && currentPlayer) renderPlayer(player);
   }

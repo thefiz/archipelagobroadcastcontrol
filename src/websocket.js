@@ -14,6 +14,12 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
       unattendedMode: Boolean(state.unattendedMode),
       unattendedTarget: state.unattendedTarget || "",
       unattendedTargetReason: state.unattendedTargetReason || "",
+      rotationSeconds: state.runtimeSettings?.rotationSeconds ?? 300,
+      asapOverrideSeconds: state.runtimeSettings?.asapOverrideSeconds ?? 180,
+      ...Object.fromEntries(Object.entries(state.runtimeSettings?.statuses || {}).flatMap(([key, definition]) => [
+        [`${key}_label`, definition.label],
+        [`${key}_timeoutSeconds`, definition.expiresSeconds]
+      ])),
       ...buildCompanionFields(stateManager.state.players)
     };
   };
@@ -148,6 +154,12 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
         return runMutation(ws, requestId,
           () => stateManager.setUnattendedMode(data.enabled),
           () => ({ enabled: stateManager.state.unattendedMode }));
+      }
+      case "admin.runtime.settings": {
+        if (!requireAdmin(ws, requestId)) return;
+        return runMutation(ws, requestId,
+          () => stateManager.updateRuntimeSettings(data),
+          () => ({ settings: stateManager.runtimeSettingsSnapshot() }));
       }
       case "admin.player.game": {
         if (!requireAdmin(ws, requestId)) return;

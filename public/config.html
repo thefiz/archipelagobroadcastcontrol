@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Broadcast Control Configuration</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell config-shell">
+    <header>
+      <h1>Configuration</h1>
+      <p class="muted">Runtime settings for unattended rotation and player call statuses.</p>
+      <a href="/dashboard.html">← Back to Production Dashboard</a>
+    </header>
+
+    <section id="configLogin" class="card">
+      <label for="configKey">Production admin key</label>
+      <div class="toolbar">
+        <input id="configKey" type="password" autocomplete="current-password">
+        <button id="configLoginButton" type="button" class="action" style="min-height:auto">Unlock Configuration</button>
+      </div>
+      <div id="configLoginNotice" class="notice" aria-live="polite"></div>
+    </section>
+
+    <div id="configApp" class="hidden">
+      <section class="card config-section">
+        <h2>Unattended Mode Timers</h2>
+        <div class="config-grid">
+          <label for="rotationSeconds">Rotation duration</label>
+          <input id="rotationSeconds" type="number" min="10" max="86400" step="1">
+          <label for="asapOverrideSeconds">ASAP override duration</label>
+          <input id="asapOverrideSeconds" type="number" min="10" max="86400" step="1">
+        </div>
+        <p class="muted" style="margin-top:12px">Values are in seconds and apply immediately to timers already in progress.</p>
+      </section>
+
+      <section class="card config-section">
+        <h2>Status Labels & Timeouts</h2>
+        <p class="muted">The backend keys remain unchanged. Only the display label and timeout are editable.</p>
+        <div id="statusSettings"></div>
+      </section>
+
+      <section class="card config-section">
+        <div class="controls" style="padding-top:0">
+          <button id="saveConfig" type="button" class="action" style="min-height:auto">Save Changes</button>
+          <button id="reloadConfig" type="button" class="small-button">Reload</button>
+        </div>
+        <div id="configNotice" class="notice" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/config-page.js"></script>
+</body>
+</html>

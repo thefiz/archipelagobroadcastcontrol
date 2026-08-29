@@ -1,6 +1,34 @@
-export function createStateManager({ config, persistedState, onPersist }) {
+export function createStateManager({ config, persistedState, onPersist, runtimeDefaults = {} }) {
   const playerDefinitions = new Map(config.players.map((player) => [player.id, player]));
   let lastPersistAt = null;
+
+  function initialRuntimeSettings() {
+    return {
+      rotationSeconds: Number(runtimeDefaults.rotationSeconds ?? 300),
+      asapOverrideSeconds: Number(runtimeDefaults.asapOverrideSeconds ?? 180),
+      statuses: Object.fromEntries(Object.entries(config.statuses).map(([key, definition]) => [key, {
+        label: definition.label,
+        expiresSeconds: definition.expiresSeconds
+      }]))
+    };
+  }
+
+  function effectiveStatusDefinition(status) {
+    const base = config.statuses[status];
+    if (!base) return null;
+    const override = state.runtimeSettings?.statuses?.[status] || {};
+    return {
+      ...base,
+      label: override.label ?? base.label,
+      expiresSeconds: Number.isFinite(Number(override.expiresSeconds))
+        ? Number(override.expiresSeconds)
+        : base.expiresSeconds
+    };
+  }
+
+  function effectiveStatuses() {
+    return Object.fromEntries(Object.keys(config.statuses).map((key) => [key, effectiveStatusDefinition(key)]));
+  }
 
   function initialState() {
     const players = {};
@@ -25,6 +53,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
       unattendedMode: false,
       unattendedTarget: "",
       unattendedTargetReason: "",
+      runtimeSettings: initialRuntimeSettings(),
       players
     };
   }
@@ -36,6 +65,22 @@ export function createStateManager({ config, persistedState, onPersist }) {
   state.unattendedMode = false;
   state.unattendedTarget = "";
   state.unattendedTargetReason = "";
+
+  if (persisted.runtimeSettings && typeof persisted.runtimeSettings === "object") {
+    const defaults = initialRuntimeSettings();
+    const savedStatuses = persisted.runtimeSettings.statuses || {};
+    state.runtimeSettings = {
+      rotationSeconds: Number.isFinite(Number(persisted.runtimeSettings.rotationSeconds))
+        ? Number(persisted.runtimeSettings.rotationSeconds) : defaults.rotationSeconds,
+      asapOverrideSeconds: Number.isFinite(Number(persisted.runtimeSettings.asapOverrideSeconds))
+        ? Number(persisted.runtimeSettings.asapOverrideSeconds) : defaults.asapOverrideSeconds,
+      statuses: Object.fromEntries(Object.keys(config.statuses).map((key) => [key, {
+        label: typeof savedStatuses[key]?.label === "string" ? savedStatuses[key].label : defaults.statuses[key].label,
+        expiresSeconds: Number.isFinite(Number(savedStatuses[key]?.expiresSeconds))
+          ? Number(savedStatuses[key].expiresSeconds) : defaults.statuses[key].expiresSeconds
+      }]))
+    };
+  }
 
   for (const [playerId, playerState] of Object.entries(persisted.players || {})) {
     if (!state.players[playerId]) continue;
@@ -52,6 +97,14 @@ export function createStateManager({ config, persistedState, onPersist }) {
     };
   }
 
+  for (const player of Object.values(state.players)) {
+    if (!player.statusSetAt || player.status === "normal") continue;
+    const definition = effectiveStatusDefinition(player.status);
+    player.statusExpiresAt = definition.expiresSeconds > 0
+      ? new Date(Date.parse(player.statusSetAt) + definition.expiresSeconds * 1000).toISOString()
+      : null;
+  }
+
   function persist() {
     const safeState = structuredClone(state);
     for (const player of Object.values(safeState.players)) player.connected = false;
@@ -63,7 +116,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
   function publicConfig() {
     return {
       eventName: config.eventName,
-      statuses: config.statuses,
+      statuses: effectiveStatuses(),
       players: config.players.map(({ token, ...player }) => player)
     };
   }
@@ -72,7 +125,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
     const player = state.players[playerId];
     const definition = playerDefinitions.get(playerId);
     if (!player || !definition) return null;
-    return { ...player, games: definition.games, statusDefinition: config.statuses[player.status] };
+    return { ...player, games: definition.games, statusDefinition: effectiveStatusDefinition(player.status) };
   }
 
   function lowerThirdPlayer(playerId) {
@@ -112,7 +165,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
 
   function setPlayerStatus(playerId, status) {
     const player = state.players[playerId];
-    const definition = config.statuses[status];
+    const definition = effectiveStatusDefinition(status);
     if (!player) return { ok: false, error: "Unknown player." };
     if (!definition) return { ok: false, error: "Unknown status." };
     const now = Date.now();
@@ -210,6 +263,57 @@ export function createStateManager({ config, persistedState, onPersist }) {
     return { ok: true };
   }
 
+  function runtimeSettingsSnapshot() {
+    return structuredClone(state.runtimeSettings);
+  }
+
+  function updateRuntimeSettings(updates) {
+    if (!updates || typeof updates !== "object" || Array.isArray(updates)) {
+      return { ok: false, error: "Settings must be a JSON object." };
+    }
+
+    const next = runtimeSettingsSnapshot();
+    if (Object.hasOwn(updates, "rotationSeconds")) {
+      const value = Number(updates.rotationSeconds);
+      if (!Number.isInteger(value) || value < 10 || value > 86400) return { ok: false, error: "rotationSeconds must be an integer from 10 to 86400." };
+      next.rotationSeconds = value;
+    }
+    if (Object.hasOwn(updates, "asapOverrideSeconds")) {
+      const value = Number(updates.asapOverrideSeconds);
+      if (!Number.isInteger(value) || value < 10 || value > 86400) return { ok: false, error: "asapOverrideSeconds must be an integer from 10 to 86400." };
+      next.asapOverrideSeconds = value;
+    }
+    if (Object.hasOwn(updates, "statuses")) {
+      if (!updates.statuses || typeof updates.statuses !== "object" || Array.isArray(updates.statuses)) return { ok: false, error: "statuses must be an object." };
+      for (const [key, statusUpdate] of Object.entries(updates.statuses)) {
+        if (!config.statuses[key]) return { ok: false, error: `Unknown status: ${key}` };
+        if (!statusUpdate || typeof statusUpdate !== "object" || Array.isArray(statusUpdate)) return { ok: false, error: `Status ${key} must be an object.` };
+        if (Object.hasOwn(statusUpdate, "label")) {
+          const label = String(statusUpdate.label).trim();
+          if (!label || label.length > 80) return { ok: false, error: `Label for ${key} must be 1-80 characters.` };
+          next.statuses[key].label = label;
+        }
+        if (Object.hasOwn(statusUpdate, "expiresSeconds")) {
+          const value = Number(statusUpdate.expiresSeconds);
+          if (!Number.isInteger(value) || value < 0 || value > 86400) return { ok: false, error: `Timeout for ${key} must be an integer from 0 to 86400.` };
+          next.statuses[key].expiresSeconds = value;
+        }
+      }
+    }
+
+    state.runtimeSettings = next;
+
+    // Apply new timeout values immediately to calls already in progress.
+    for (const player of Object.values(state.players)) {
+      if (!player.statusSetAt || player.status === "normal") continue;
+      const definition = effectiveStatusDefinition(player.status);
+      player.statusExpiresAt = definition.expiresSeconds > 0
+        ? new Date(Date.parse(player.statusSetAt) + definition.expiresSeconds * 1000).toISOString()
+        : null;
+    }
+    return { ok: true };
+  }
+
   function expireStatuses(now = Date.now()) {
     let changed = false;
     for (const player of Object.values(state.players)) {
@@ -231,6 +335,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
     state, playerDefinitions, publicConfig, safePlayerState, lowerThirdPlayer, lowerThirdSnapshot,
     persist, getLastPersistAt: () => lastPersistAt, setLastPersistAt: (value) => { lastPersistAt = value; },
     setPlayerGame, setPlayerStatus, setPlayerAirState, setPlayerRotationActive, setUnattendedMode,
-    clearPlayerStatus, panicResetPlayer, resetEventState, updatePlayer, expireStatuses, resolveCompactMode
+    clearPlayerStatus, panicResetPlayer, resetEventState, updatePlayer, runtimeSettingsSnapshot, updateRuntimeSettings,
+    effectiveStatusDefinition, effectiveStatuses, expireStatuses, resolveCompactMode
   };
 }

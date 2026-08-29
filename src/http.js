@@ -94,6 +94,37 @@ export function createHttpServer({ publicDir, stateManager, snapshot, appVersion
       return sendJson(res,200,{ok:true,player:stateManager.safePlayerState(playerId)});
     }
 
+    if (pathname === "/api/admin/runtime-config" && req.method === "GET") {
+      const authorization = req.headers.authorization;
+      const token = typeof authorization === "string" && authorization.startsWith("Bearer ")
+        ? authorization.slice(7) : "";
+      if (!safeCompare(token, adminKey)) return sendJson(res,401,{ok:false,error:"Invalid admin key."});
+      return sendJson(res,200,{ok:true,settings:stateManager.runtimeSettingsSnapshot()});
+    }
+
+    if (pathname === "/api/admin/runtime-config" && req.method === "POST") {
+      const authorization = req.headers.authorization;
+      const token = typeof authorization === "string" && authorization.startsWith("Bearer ")
+        ? authorization.slice(7) : "";
+      if (!safeCompare(token, adminKey)) return sendJson(res,401,{ok:false,error:"Invalid admin key."});
+
+      let body;
+      try { body = await readJsonBody(req); }
+      catch (error) { return sendJson(res,400,{ok:false,error:error.message}); }
+
+      const previousState = structuredClone(stateManager.state);
+      const result = stateManager.updateRuntimeSettings(body);
+      if (!result.ok) return sendJson(res,400,result);
+      try { stateManager.persist(); }
+      catch (error) {
+        restoreState(stateManager.state, previousState);
+        console.error(error.message);
+        return sendJson(res,500,{ok:false,error:"Could not persist server state."});
+      }
+      onStateChanged?.();
+      return sendJson(res,200,{ok:true,settings:stateManager.runtimeSettingsSnapshot()});
+    }
+
     if (pathname === "/api/admin/unattended" && req.method === "POST") {
       const authorization = req.headers.authorization;
       const token = typeof authorization === "string" && authorization.startsWith("Bearer ")

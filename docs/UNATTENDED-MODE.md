@@ -87,3 +87,24 @@ Suggested Companion logic:
 
 - when `unattendedTarget == andy`, run Andy routing workflow
 - when `unattendedTarget == fallback`, switch to the room camera
+
+
+## Runtime configuration page
+
+`/config.html` is linked from the production dashboard and requires the production admin key.
+
+Runtime-editable and persisted settings:
+
+- unattended rotation duration
+- ASAP override duration
+- each status display label
+- each status timeout
+
+The backend status keys remain `normal`, `soon`, `asap`, and `downtime`. Renaming a label does not change API/Companion status values. Timer changes apply immediately, including calls/rotations already in progress.
+
+Protected API:
+
+- `GET /api/admin/runtime-config`
+- `POST /api/admin/runtime-config`
+
+Both require `Authorization: Bearer ADMIN_KEY`.
