@@ -12,6 +12,7 @@ const healthSummary = document.querySelector("#healthSummary");
 const healthBadge = document.querySelector("#healthBadge");
 const controlNotice = document.querySelector("#controlNotice");
 const resetEventButton = document.querySelector("#resetEvent");
+const unattendedToggle = document.querySelector("#unattendedToggle");
 const serverAlert = document.querySelector("#serverAlert");
 
 let authenticated = false;
@@ -127,6 +128,11 @@ function render(snapshot) {
   if (!authenticated) return;
 
   renderHealth(snapshot);
+  unattendedToggle.textContent = snapshot.unattendedMode ? "Unattended: ON" : "Unattended: OFF";
+  unattendedToggle.classList.toggle("active", Boolean(snapshot.unattendedMode));
+  unattendedToggle.title = snapshot.unattendedTarget
+    ? `Current target: ${snapshot.unattendedTarget} (${snapshot.unattendedTargetReason || "unknown"})`
+    : "No unattended target";
   dashboard.replaceChildren();
   for (const player of sortPlayers(snapshot.players)) {
     const card = document.createElement("article");
@@ -161,6 +167,12 @@ function render(snapshot) {
       ? `${player.statusDefinition.label} · ${formatAge(player.statusSetAt)}`
       : player.statusDefinition.label;
     badges.append(status);
+
+    const rotationBadge = document.createElement("span");
+    rotationBadge.className = `badge ${player.rotationActive ? "rotation-active" : ""}`;
+    rotationBadge.textContent = player.rotationActive ? "ROTATION ON" : "ROTATION OFF";
+    badges.append(rotationBadge);
+
     top.append(identity, badges);
 
     const details = document.createElement("p");
@@ -214,6 +226,15 @@ function render(snapshot) {
     clear.addEventListener("click", () => sendAdmin("admin.player.clear", { playerId: player.id }));
     controls.append(clear);
 
+    const rotation = document.createElement("button");
+    rotation.type = "button";
+    rotation.className = "small-button";
+    rotation.textContent = player.rotationActive ? "Leave rotation" : "Join rotation";
+    rotation.addEventListener("click", () =>
+      sendAdmin("admin.player.rotation", { playerId: player.id, enabled: !player.rotationActive })
+    );
+    controls.append(rotation);
+
     const panic = document.createElement("button");
     panic.type = "button";
     panic.className = "small-button danger-button";
@@ -266,6 +287,12 @@ for (const button of document.querySelectorAll(".compact-mode")) {
     if (result.ok) controlNotice.textContent = `Compact monitor changed to ${result.mode.toUpperCase()}.`;
   });
 }
+
+unattendedToggle.addEventListener("click", async () => {
+  const enabled = !(latestSnapshot?.unattendedMode);
+  const result = await sendAdmin("admin.unattended.mode", { enabled });
+  if (result.ok) controlNotice.textContent = `Unattended mode ${result.enabled ? "enabled" : "disabled"}.`;
+});
 
 resetEventButton.addEventListener("click", async () => {
   if (!confirm(

@@ -1,0 +1,27 @@
+{
+  "prototype": true,
+  "baseVersion": "0.3.7",
+  "features": [
+    "player rotation opt-in/out",
+    "production dashboard rotation override",
+    "unattended mode admin toggle",
+    "GET /api/unattended",
+    "POST /api/admin/unattended",
+    "server-side eligible-player rotation",
+    "fallback target when nobody is eligible",
+    "newest-ASAP temporary override",
+    "Companion flat unattendedMode/unattendedTarget fields",
+    "Companion per-player rotationActive fields",
+    "unattended mode forced OFF after server restart"
+  ],
+  "defaults": {
+    "rotationSeconds": 300,
+    "asapOverrideSeconds": 180,
+    "fallbackTarget": "fallback",
+    "playerRotationActive": true
+  },
+  "tests": {
+    "passed": 26,
+    "failed": 0
+  }
+}

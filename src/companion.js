@@ -6,6 +6,7 @@ export function buildCompanionFields(players) {
     fields[`${id}_air`] = player.airState;
     fields[`${id}_game`] = player.currentGame || "";
     fields[`${id}_connected`] = Boolean(player.connected);
+    fields[`${id}_rotationActive`] = Boolean(player.rotationActive);
   }
   return fields;
 }

@@ -1,0 +1,27 @@
+{
+  "version": "0.3.7",
+  "feature_checks": {
+    "player login screen": true,
+    "direct URL login retained": true,
+    "Companion flat state": true,
+    "HTTP player status endpoint": true,
+    "dashboard game control": true,
+    "dashboard stable timer refresh": true,
+    "dashboard WebSocket connection guard": true,
+    "dashboard status age in badge": true,
+    "4-column dashboard": true,
+    "compact dynamic density": true,
+    "compact newest-first calls": true,
+    "working no-flash page": true,
+    "strict config validation": true,
+    "docs API reference": true,
+    "docs application pages": true,
+    "docs index": true,
+    "docs screenshots": true,
+    "multiview removed": true
+  },
+  "syntax_check_passed": true,
+  "tests_passed": true,
+  "tests_passed_count": 23,
+  "tests_failed_count": 0
+}

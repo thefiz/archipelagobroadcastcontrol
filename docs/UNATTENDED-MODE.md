@@ -1,0 +1,88 @@
+# Unattended Mode Prototype
+
+This is an experimental branch feature and is not part of the locked main v0.3.7 release.
+
+## Player participation
+
+Players default to being opted into the overnight rotation and can join or leave it from `player.html`.
+Production can override the same `rotationActive` state from the dashboard.
+
+A player is eligible for the normal rotation only when:
+
+- `rotationActive` is true
+- their player page is connected
+
+## Rotation
+
+When unattended mode is enabled, the server exposes an `unattendedTarget` for Companion.
+
+Default timings:
+
+- normal rotation: 300 seconds
+- ASAP override: 180 seconds
+
+Environment overrides:
+
+- `UNATTENDED_ROTATION_SECONDS`
+- `UNATTENDED_ASAP_SECONDS`
+
+If no eligible player exists, `unattendedTarget` becomes `fallback`.
+
+A newly received ASAP request immediately becomes the target, even if that player is not opted into the normal rotation. The newest ASAP wins. After the override period expires, normal rotation resumes.
+
+The server only chooses the target. Companion remains responsible for actually switching video/scene routing.
+
+## WebSocket commands
+
+Player:
+
+```json
+{"type":"player.rotation","data":{"enabled":true}}
+```
+
+Admin:
+
+```json
+{"type":"admin.player.rotation","data":{"playerId":"andy","enabled":true}}
+```
+
+```json
+{"type":"admin.unattended.mode","data":{"enabled":true}}
+```
+
+## HTTP
+
+Read state:
+
+`GET /api/unattended`
+
+Set unattended mode:
+
+`POST /api/admin/unattended`
+
+Header:
+
+`Authorization: Bearer ADMIN_KEY`
+
+Body:
+
+```json
+{"enabled":true}
+```
+
+## Companion flat fields
+
+Global:
+
+- `unattendedMode`
+- `unattendedTarget`
+- `unattendedTargetReason`
+
+Per player:
+
+- `<playerId>_rotationActive`
+
+Suggested Companion logic:
+
+- when `unattendedTarget == andy`, run Andy routing workflow
+- when `unattendedTarget == fallback`, switch to the room camera

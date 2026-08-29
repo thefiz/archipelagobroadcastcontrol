@@ -453,3 +453,18 @@ body.server-unreachable #healthConnection {
     flex-direction: column;
   }
 }
+
+.badge.rotation-active {
+  background: #173d24;
+  border-color: var(--good);
+  color: #8ee6a8;
+}
+#unattendedToggle.active,
+#rotationButton.active {
+  background: #173d24;
+  border-color: var(--good);
+  color: #d7ffe2;
+}
+.overnight-card {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}

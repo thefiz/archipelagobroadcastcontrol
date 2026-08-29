@@ -11,6 +11,9 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
       compactMode: state.compactMode,
       currentLivePlayerId: state.system?.currentLivePlayerId ?? "",
       currentLivePlayerName: state.system?.currentLivePlayerName ?? "",
+      unattendedMode: Boolean(state.unattendedMode),
+      unattendedTarget: state.unattendedTarget || "",
+      unattendedTargetReason: state.unattendedTargetReason || "",
       ...buildCompanionFields(stateManager.state.players)
     };
   };
@@ -116,6 +119,12 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
           () => stateManager.setPlayerStatus(playerId, data.status),
           () => ({ player: stateManager.safePlayerState(playerId) }));
       }
+      case "player.rotation": {
+        const playerId = requirePlayer(ws, requestId); if (!playerId) return;
+        return runMutation(ws, requestId,
+          () => stateManager.setPlayerRotationActive(playerId, data.enabled),
+          () => ({ player: stateManager.safePlayerState(playerId) }));
+      }
       case "admin.player.air": {
         if (!requireAdmin(ws, requestId)) return;
         return runMutation(ws, requestId,
@@ -127,6 +136,18 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
         return runMutation(ws, requestId,
           () => stateManager.setPlayerStatus(data.playerId, data.status),
           () => ({ player: stateManager.safePlayerState(data.playerId) }));
+      }
+      case "admin.player.rotation": {
+        if (!requireAdmin(ws, requestId)) return;
+        return runMutation(ws, requestId,
+          () => stateManager.setPlayerRotationActive(data.playerId, data.enabled),
+          () => ({ player: stateManager.safePlayerState(data.playerId) }));
+      }
+      case "admin.unattended.mode": {
+        if (!requireAdmin(ws, requestId)) return;
+        return runMutation(ws, requestId,
+          () => stateManager.setUnattendedMode(data.enabled),
+          () => ({ enabled: stateManager.state.unattendedMode }));
       }
       case "admin.player.game": {
         if (!requireAdmin(ws, requestId)) return;

@@ -45,21 +45,114 @@ function systemStatus() {
     configuredPlayers:players.length, connectedPlayers:players.filter((p)=>p.connected).length,
     websocketClients:websocketApi?.wss?.clients?.size ?? 0,
     currentLivePlayerId:live?.id || null, currentLivePlayerName:live?.name || null,
-    compactMode:stateManager.state.compactMode, lastPersistAt:stateManager.getLastPersistAt()
+    compactMode:stateManager.state.compactMode,
+    unattendedMode:stateManager.state.unattendedMode,
+    unattendedTarget:stateManager.state.unattendedTarget || null,
+    unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
+    eligibleRotationPlayers:players.filter((p)=>p.connected && p.rotationActive).length,
+    lastPersistAt:stateManager.getLastPersistAt()
   };
 }
 function snapshot() {
   return {
-    eventName:stateManager.state.eventName, generatedAt:new Date().toISOString(), compactMode:stateManager.state.compactMode,
-    system:systemStatus(), players:Object.keys(stateManager.state.players).map(stateManager.safePlayerState)
+    eventName:stateManager.state.eventName,
+    generatedAt:new Date().toISOString(),
+    compactMode:stateManager.state.compactMode,
+    unattendedMode:stateManager.state.unattendedMode,
+    unattendedTarget:stateManager.state.unattendedTarget || null,
+    unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
+    system:systemStatus(),
+    players:Object.keys(stateManager.state.players).map(stateManager.safePlayerState)
   };
 }
 
 const server=createHttpServer({
-  publicDir:PUBLIC_DIR, stateManager, snapshot, appVersion:APP_VERSION, wsPath:WS_PATH,
+  publicDir:PUBLIC_DIR, stateManager, snapshot, appVersion:APP_VERSION, wsPath:WS_PATH, adminKey,
   onStateChanged: () => websocketApi?.broadcastSnapshot()
 });
 websocketApi=attachWebSocket({server,wsPath:WS_PATH,stateManager,adminKey,snapshot});
+
+
+const ROTATION_SECONDS = Math.max(10, Number(process.env.UNATTENDED_ROTATION_SECONDS || 300));
+const ASAP_OVERRIDE_SECONDS = Math.max(10, Number(process.env.UNATTENDED_ASAP_SECONDS || 180));
+
+let rotationIndex = -1;
+let rotationTargetSince = 0;
+let asapOverride = null;
+let lastAsapStamp = "";
+
+function setUnattendedTarget(playerId, reason) {
+  const nextTarget = playerId || "fallback";
+  if (
+    stateManager.state.unattendedTarget === nextTarget &&
+    stateManager.state.unattendedTargetReason === reason
+  ) return false;
+
+  stateManager.state.unattendedTarget = nextTarget;
+  stateManager.state.unattendedTargetReason = reason;
+  websocketApi.broadcastSnapshot();
+  return true;
+}
+
+function updateUnattendedTarget(now = Date.now()) {
+  if (!stateManager.state.unattendedMode) {
+    if (stateManager.state.unattendedTarget || stateManager.state.unattendedTargetReason) {
+      stateManager.state.unattendedTarget = "";
+      stateManager.state.unattendedTargetReason = "";
+      websocketApi.broadcastSnapshot();
+    }
+    asapOverride = null;
+    lastAsapStamp = "";
+    rotationTargetSince = 0;
+    return;
+  }
+
+  const players = Object.values(stateManager.state.players);
+
+  const newestAsap = players
+    .filter((player) => player.connected && player.status === "asap" && player.statusSetAt)
+    .sort((a, b) => Date.parse(b.statusSetAt) - Date.parse(a.statusSetAt))[0];
+
+  if (newestAsap && newestAsap.statusSetAt !== lastAsapStamp) {
+    lastAsapStamp = newestAsap.statusSetAt;
+    asapOverride = {
+      playerId: newestAsap.id,
+      startedAt: now,
+      expiresAt: now + ASAP_OVERRIDE_SECONDS * 1000
+    };
+  }
+
+  if (asapOverride && now < asapOverride.expiresAt) {
+    return setUnattendedTarget(asapOverride.playerId, "asap");
+  }
+  asapOverride = null;
+
+  const eligible = players.filter((player) => player.connected && player.rotationActive);
+  if (!eligible.length) {
+    rotationIndex = -1;
+    rotationTargetSince = now;
+    return setUnattendedTarget("fallback", "fallback");
+  }
+
+  const currentTarget = stateManager.state.unattendedTarget;
+  const currentIndex = eligible.findIndex((player) => player.id === currentTarget);
+  const currentStillEligible = currentIndex >= 0 && stateManager.state.unattendedTargetReason === "rotation";
+
+  if (!currentStillEligible || !rotationTargetSince) {
+    rotationIndex = currentIndex >= 0 ? currentIndex : (rotationIndex + 1) % eligible.length;
+    if (rotationIndex < 0 || rotationIndex >= eligible.length) rotationIndex = 0;
+    rotationTargetSince = now;
+    return setUnattendedTarget(eligible[rotationIndex].id, "rotation");
+  }
+
+  if (now - rotationTargetSince >= ROTATION_SECONDS * 1000) {
+    rotationIndex = (currentIndex + 1) % eligible.length;
+    rotationTargetSince = now;
+    return setUnattendedTarget(eligible[rotationIndex].id, "rotation");
+  }
+}
+
+setInterval(() => updateUnattendedTarget(), 1000);
 
 setInterval(()=>{
   if(stateManager.expireStatuses()) {

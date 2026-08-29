@@ -14,17 +14,28 @@ export function createStateManager({ config, persistedState, onPersist }) {
         statusExpiresAt: null,
         asapTakenLiveAt: null,
         airState: "off",
+        rotationActive: true,
         updatedAt: new Date().toISOString(),
         connected: false
       };
     }
-    return { eventName: config.eventName, compactMode: "priority", players };
+    return {
+      eventName: config.eventName,
+      compactMode: "priority",
+      unattendedMode: false,
+      unattendedTarget: "",
+      unattendedTargetReason: "",
+      players
+    };
   }
 
   const state = initialState();
   const persisted = persistedState || initialState();
   state.compactMode = ["priority", "normal", "bk", "all"].includes(persisted.compactMode)
     ? persisted.compactMode : "priority";
+  state.unattendedMode = false;
+  state.unattendedTarget = "";
+  state.unattendedTargetReason = "";
 
   for (const [playerId, playerState] of Object.entries(persisted.players || {})) {
     if (!state.players[playerId]) continue;
@@ -36,6 +47,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
       statusExpiresAt: playerState.statusExpiresAt || null,
       asapTakenLiveAt: playerState.asapTakenLiveAt || null,
       airState: ["off", "standby", "live"].includes(playerState.airState) ? playerState.airState : "off",
+      rotationActive: playerState.rotationActive !== false,
       connected: false
     };
   }
@@ -112,6 +124,25 @@ export function createStateManager({ config, persistedState, onPersist }) {
     return { ok: true };
   }
 
+  function setPlayerRotationActive(playerId, enabled) {
+    const player = state.players[playerId];
+    if (!player) return { ok: false, error: "Unknown player." };
+    if (typeof enabled !== "boolean") return { ok: false, error: "enabled must be true or false." };
+    player.rotationActive = enabled;
+    player.updatedAt = new Date().toISOString();
+    return { ok: true };
+  }
+
+  function setUnattendedMode(enabled) {
+    if (typeof enabled !== "boolean") return { ok: false, error: "enabled must be true or false." };
+    state.unattendedMode = enabled;
+    if (!enabled) {
+      state.unattendedTarget = "";
+      state.unattendedTargetReason = "";
+    }
+    return { ok: true };
+  }
+
   function setPlayerAirState(playerId, airState) {
     const player = state.players[playerId];
     if (!player) return { ok: false, error: "Unknown player." };
@@ -163,17 +194,19 @@ export function createStateManager({ config, persistedState, onPersist }) {
     const definition = playerDefinitions.get(playerId);
     if (!player) return { ok: false, error: "Unknown player." };
     if (!updates || typeof updates !== "object" || Array.isArray(updates)) return { ok: false, error: "Updates must be a JSON object." };
-    const allowed = new Set(["currentGame", "status", "airState"]);
+    const allowed = new Set(["currentGame", "status", "airState", "rotationActive"]);
     const fields = Object.keys(updates);
     const unknown = fields.filter((field) => !allowed.has(field));
     if (unknown.length) return { ok: false, error: `Unknown field(s): ${unknown.join(", ")}` };
-    if (!fields.length) return { ok: false, error: "Supply at least one of currentGame, status, or airState." };
+    if (!fields.length) return { ok: false, error: "Supply at least one supported player field." };
     if (Object.hasOwn(updates, "currentGame") && !definition.games.includes(updates.currentGame)) return { ok: false, error: "That game is not assigned to this player." };
     if (Object.hasOwn(updates, "status") && !config.statuses[updates.status]) return { ok: false, error: "Unknown status." };
     if (Object.hasOwn(updates, "airState") && !["off", "standby", "live"].includes(updates.airState)) return { ok: false, error: "Unknown air state." };
+    if (Object.hasOwn(updates, "rotationActive") && typeof updates.rotationActive !== "boolean") return { ok: false, error: "rotationActive must be true or false." };
     if (Object.hasOwn(updates, "currentGame")) setPlayerGame(playerId, updates.currentGame);
     if (Object.hasOwn(updates, "status")) setPlayerStatus(playerId, updates.status);
     if (Object.hasOwn(updates, "airState")) setPlayerAirState(playerId, updates.airState);
+    if (Object.hasOwn(updates, "rotationActive")) setPlayerRotationActive(playerId, updates.rotationActive);
     return { ok: true };
   }
 
@@ -197,7 +230,7 @@ export function createStateManager({ config, persistedState, onPersist }) {
   return {
     state, playerDefinitions, publicConfig, safePlayerState, lowerThirdPlayer, lowerThirdSnapshot,
     persist, getLastPersistAt: () => lastPersistAt, setLastPersistAt: (value) => { lastPersistAt = value; },
-    setPlayerGame, setPlayerStatus, setPlayerAirState, clearPlayerStatus, panicResetPlayer,
-    resetEventState, updatePlayer, expireStatuses, resolveCompactMode
+    setPlayerGame, setPlayerStatus, setPlayerAirState, setPlayerRotationActive, setUnattendedMode,
+    clearPlayerStatus, panicResetPlayer, resetEventState, updatePlayer, expireStatuses, resolveCompactMode
   };
 }

@@ -51,7 +51,7 @@ function readJsonBody(req, maxBytes = 8192) {
   });
 }
 
-export function createHttpServer({ publicDir, stateManager, snapshot, appVersion, wsPath, onStateChanged }) {
+export function createHttpServer({ publicDir, stateManager, snapshot, appVersion, wsPath, adminKey, onStateChanged }) {
   function serveStatic(req, res) {
     let pathname;
     try { pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname); }
@@ -94,10 +94,46 @@ export function createHttpServer({ publicDir, stateManager, snapshot, appVersion
       return sendJson(res,200,{ok:true,player:stateManager.safePlayerState(playerId)});
     }
 
+    if (pathname === "/api/admin/unattended" && req.method === "POST") {
+      const authorization = req.headers.authorization;
+      const token = typeof authorization === "string" && authorization.startsWith("Bearer ")
+        ? authorization.slice(7) : "";
+      if (!safeCompare(token, adminKey)) return sendJson(res,401,{ok:false,error:"Invalid admin key."});
+
+      let body;
+      try { body = await readJsonBody(req); }
+      catch (error) { return sendJson(res,400,{ok:false,error:error.message}); }
+
+      const previousState = structuredClone(stateManager.state);
+      const result = stateManager.setUnattendedMode(body.enabled);
+      if (!result.ok) return sendJson(res,400,result);
+
+      try { stateManager.persist(); }
+      catch (error) {
+        restoreState(stateManager.state, previousState);
+        console.error(error.message);
+        return sendJson(res,500,{ok:false,error:"Could not persist server state."});
+      }
+
+      onStateChanged?.();
+      return sendJson(res,200,{ok:true,enabled:stateManager.state.unattendedMode});
+    }
+
     if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405,{Allow:"GET, HEAD"}); res.end(); return; }
     const head = req.method === "HEAD";
     if (pathname === "/api/config") return sendJson(res,200,stateManager.publicConfig(),{head});
     if (pathname === "/api/state") return sendJson(res,200,snapshot(),{head});
+    if (pathname === "/api/unattended") {
+      const players = Object.values(stateManager.state.players);
+      return sendJson(res,200,{
+        enabled:stateManager.state.unattendedMode,
+        target:stateManager.state.unattendedTarget || null,
+        reason:stateManager.state.unattendedTargetReason || null,
+        eligiblePlayers:players.filter((player)=>player.connected && player.rotationActive).map((player)=>({
+          id:player.id,name:player.name
+        }))
+      },{head});
+    }
     if (pathname === "/api/lower-thirds") return sendJson(res,200,stateManager.lowerThirdSnapshot(),{cors:true,head});
     if (pathname === "/api/lower-thirds/live") {
       const live = Object.values(stateManager.state.players).find((p)=>p.airState === "live");

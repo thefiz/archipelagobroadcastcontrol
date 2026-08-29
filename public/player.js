@@ -15,6 +15,9 @@ const statuses = document.querySelector("#statuses");
 const gameNotice = document.querySelector("#gameNotice");
 const statusNotice = document.querySelector("#statusNotice");
 const air = document.querySelector("#air");
+const rotationState = document.querySelector("#rotationState");
+const rotationButton = document.querySelector("#rotationButton");
+const rotationNotice = document.querySelector("#rotationNotice");
 
 const login = document.querySelector("#playerLogin");
 const loginPlayer = document.querySelector("#loginPlayer");
@@ -132,6 +135,14 @@ function renderPlayer(player) {
     button.classList.toggle("active", button.dataset.status === player.status);
     button.setAttribute("aria-pressed", String(button.dataset.status === player.status));
   }
+
+  rotationState.textContent = player.rotationActive
+    ? "You are in the overnight rotation."
+    : "You are not in the overnight rotation.";
+  rotationButton.textContent = player.rotationActive
+    ? "Leave Overnight Rotation"
+    : "Join Overnight Rotation";
+  rotationButton.classList.toggle("active", player.rotationActive);
 
   air.className = `air ${player.airState}`;
   air.textContent =
@@ -257,6 +268,14 @@ loginToken.addEventListener("keydown", async (event) => {
 
 logoutButton.addEventListener("click", () => {
   resetPlayerSession();
+});
+
+rotationButton.addEventListener("click", async () => {
+  if (!currentPlayer) return;
+  const result = await socket.request("player.rotation", { enabled: !currentPlayer.rotationActive });
+  rotationNotice.textContent = result.ok
+    ? (result.player.rotationActive ? "Joined overnight rotation." : "Left overnight rotation.")
+    : result.error;
 });
 
 gameSelect.addEventListener("change", async () => {
