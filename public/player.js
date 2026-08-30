@@ -18,6 +18,9 @@ const air = document.querySelector("#air");
 const rotationState = document.querySelector("#rotationState");
 const rotationButton = document.querySelector("#rotationButton");
 const rotationNotice = document.querySelector("#rotationNotice");
+const focusState = document.querySelector("#focusState");
+const focusButton = document.querySelector("#focusButton");
+const focusNotice = document.querySelector("#focusNotice");
 
 const login = document.querySelector("#playerLogin");
 const loginPlayer = document.querySelector("#loginPlayer");
@@ -30,6 +33,7 @@ let currentPlayer = null;
 let statusDefinitions = {};
 let socketConnected = false;
 let rosterLoaded = false;
+let unattendedFocusPlayerId = null;
 
 function showError(message) {
   errorBox.textContent = message;
@@ -143,6 +147,13 @@ function renderPlayer(player) {
     ? "Leave Overnight Rotation"
     : "Join Overnight Rotation";
   rotationButton.classList.toggle("active", player.rotationActive);
+
+  const hasFocus = unattendedFocusPlayerId === player.id;
+  focusState.textContent = hasFocus
+    ? "Your feed has persistent unattended focus."
+    : (unattendedFocusPlayerId ? "Another player currently has persistent focus." : "No player has persistent focus.");
+  focusButton.textContent = hasFocus ? "Release Focus" : "Hold My Feed";
+  focusButton.classList.toggle("active", hasFocus);
 
   air.className = `air ${player.airState}`;
   air.textContent =
@@ -259,6 +270,7 @@ const socket = new BroadcastSocket({
       }
     }
 
+    unattendedFocusPlayerId = message.data.unattendedFocusPlayerId || null;
     const player = message.data.players.find((entry) => entry.id === activePlayerId);
     if (player && currentPlayer) renderPlayer(player);
   }
@@ -277,6 +289,15 @@ loginToken.addEventListener("keydown", async (event) => {
 
 logoutButton.addEventListener("click", () => {
   resetPlayerSession();
+});
+
+focusButton.addEventListener("click", async () => {
+  if (!currentPlayer) return;
+  const enabled = unattendedFocusPlayerId !== currentPlayer.id;
+  const result = await socket.request("player.unattended.focus", { enabled });
+  focusNotice.textContent = result.ok
+    ? (enabled ? "Persistent focus requested." : "Persistent focus released.")
+    : result.error;
 });
 
 rotationButton.addEventListener("click", async () => {

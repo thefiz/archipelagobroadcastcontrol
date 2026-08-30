@@ -13,6 +13,7 @@ const healthBadge = document.querySelector("#healthBadge");
 const controlNotice = document.querySelector("#controlNotice");
 const resetEventButton = document.querySelector("#resetEvent");
 const unattendedToggle = document.querySelector("#unattendedToggle");
+const clearFocusButton = document.querySelector("#clearFocus");
 const serverAlert = document.querySelector("#serverAlert");
 
 let authenticated = false;
@@ -173,6 +174,13 @@ function render(snapshot) {
     rotationBadge.textContent = player.rotationActive ? "ROTATION ON" : "ROTATION OFF";
     badges.append(rotationBadge);
 
+    if (snapshot.unattendedFocusPlayerId === player.id) {
+      const focusBadge = document.createElement("span");
+      focusBadge.className = "badge rotation-active";
+      focusBadge.textContent = "FOCUS";
+      badges.append(focusBadge);
+    }
+
     top.append(identity, badges);
 
     const details = document.createElement("p");
@@ -235,6 +243,16 @@ function render(snapshot) {
     );
     controls.append(rotation);
 
+    const focus = document.createElement("button");
+    focus.type = "button";
+    focus.className = "small-button";
+    const focused = snapshot.unattendedFocusPlayerId === player.id;
+    focus.textContent = focused ? "Release focus" : "Focus player";
+    focus.addEventListener("click", () =>
+      sendAdmin("admin.unattended.focus", { playerId: focused ? null : player.id })
+    );
+    controls.append(focus);
+
     const panic = document.createElement("button");
     panic.type = "button";
     panic.className = "small-button danger-button";
@@ -292,6 +310,11 @@ unattendedToggle.addEventListener("click", async () => {
   const enabled = !(latestSnapshot?.unattendedMode);
   const result = await sendAdmin("admin.unattended.mode", { enabled });
   if (result.ok) controlNotice.textContent = `Unattended mode ${result.enabled ? "enabled" : "disabled"}.`;
+});
+
+clearFocusButton.addEventListener("click", async () => {
+  const result = await sendAdmin("admin.unattended.focus", { playerId: null });
+  if (result.ok) controlNotice.textContent = "Persistent player focus cleared.";
 });
 
 resetEventButton.addEventListener("click", async () => {

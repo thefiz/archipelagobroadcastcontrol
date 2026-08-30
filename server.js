@@ -55,6 +55,7 @@ function systemStatus() {
     unattendedMode:stateManager.state.unattendedMode,
     unattendedTarget:stateManager.state.unattendedTarget || null,
     unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
+    unattendedFocusPlayerId:stateManager.state.unattendedFocusPlayerId || null,
     eligibleRotationPlayers:players.filter((p)=>p.connected && p.rotationActive && (stateManager.state.runtimeSettings.rotationValidStatuses || []).includes(p.status)).length,
     lastPersistAt:stateManager.getLastPersistAt()
   };
@@ -67,6 +68,7 @@ function snapshot() {
     unattendedMode:stateManager.state.unattendedMode,
     unattendedTarget:stateManager.state.unattendedTarget || null,
     unattendedTargetReason:stateManager.state.unattendedTargetReason || null,
+    unattendedFocusPlayerId:stateManager.state.unattendedFocusPlayerId || null,
     runtimeSettings:stateManager.runtimeSettingsSnapshot(),
     system:systemStatus(),
     players:Object.keys(stateManager.state.players).map(stateManager.safePlayerState)
@@ -116,6 +118,17 @@ function updateUnattendedTarget(now = Date.now()) {
   }
 
   const players = Object.values(stateManager.state.players);
+
+  // Persistent focus has highest unattended priority. A disconnected focus owner
+  // is automatically released so a dead player page cannot hold the stream.
+  if (stateManager.state.unattendedFocusPlayerId) {
+    const focused = stateManager.state.players[stateManager.state.unattendedFocusPlayerId];
+    if (focused?.connected) {
+      return setUnattendedTarget(focused.id, "focus");
+    }
+    stateManager.state.unattendedFocusPlayerId = null;
+    websocketApi.broadcastSnapshot();
+  }
 
   const newestAsap = players
     .filter((player) => player.connected && player.status === "asap" && player.statusSetAt)

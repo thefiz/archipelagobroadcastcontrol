@@ -14,6 +14,7 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
       unattendedMode: Boolean(state.unattendedMode),
       unattendedTarget: state.unattendedTarget || "",
       unattendedTargetReason: state.unattendedTargetReason || "",
+      unattendedFocusPlayerId: state.unattendedFocusPlayerId || "",
       rotationSeconds: state.runtimeSettings?.rotationSeconds ?? 300,
       asapOverrideSeconds: state.runtimeSettings?.asapOverrideSeconds ?? 180,
       fallbackRotationSeconds: state.runtimeSettings?.fallbackRotationSeconds ?? 120,
@@ -23,7 +24,8 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
         [`${key}_label`, definition.label],
         [`${key}_timeoutSeconds`, definition.expiresSeconds]
       ])),
-      ...buildCompanionFields(stateManager.state.players)
+      ...buildCompanionFields(stateManager.state.players),
+      ...Object.fromEntries(Object.keys(stateManager.state.players).map((id) => [`${id}_focused`, state.unattendedFocusPlayerId === id]))
     };
   };
 
@@ -134,6 +136,13 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
           () => stateManager.setPlayerRotationActive(playerId, data.enabled),
           () => ({ player: stateManager.safePlayerState(playerId) }));
       }
+      case "player.unattended.focus": {
+        const playerId = requirePlayer(ws, requestId); if (!playerId) return;
+        if (typeof data.enabled !== "boolean") return fail(ws, requestId, "enabled must be true or false.");
+        return runMutation(ws, requestId,
+          () => stateManager.setUnattendedFocus(data.enabled ? playerId : (stateManager.state.unattendedFocusPlayerId === playerId ? null : stateManager.state.unattendedFocusPlayerId)),
+          () => ({ focusedPlayerId: stateManager.state.unattendedFocusPlayerId }));
+      }
       case "admin.player.air": {
         if (!requireAdmin(ws, requestId)) return;
         return runMutation(ws, requestId,
@@ -157,6 +166,12 @@ export function attachWebSocket({ server, wsPath, stateManager, adminKey, snapsh
         return runMutation(ws, requestId,
           () => stateManager.setUnattendedMode(data.enabled),
           () => ({ enabled: stateManager.state.unattendedMode }));
+      }
+      case "admin.unattended.focus": {
+        if (!requireAdmin(ws, requestId)) return;
+        return runMutation(ws, requestId,
+          () => stateManager.setUnattendedFocus(data.playerId ?? null),
+          () => ({ focusedPlayerId: stateManager.state.unattendedFocusPlayerId }));
       }
       case "admin.runtime.settings": {
         if (!requireAdmin(ws, requestId)) return;

@@ -133,3 +133,25 @@ Companion flat fields include:
 ## Rotation status eligibility
 
 A player is eligible only when connected, `rotationActive` is true, and their backend status is selected in `rotationValidStatuses`. Defaults are all configured statuses except `downtime`. This is editable on `/config.html`.
+
+
+## Persistent player focus
+
+A logged-in player can request persistent unattended focus from `player.html`. Only one player can own focus at a time; a new request replaces the previous owner. The focus owner can release it, and production can assign or clear focus from the dashboard.
+
+Unattended priority is:
+
+1. persistent focus
+2. newest ASAP override
+3. eligible player rotation
+4. fallback rotation
+
+Focus is automatically cleared if the focused player's page disconnects. It is runtime-only and is not restored after a server restart.
+
+WebSocket commands:
+
+- player: `{"type":"player.unattended.focus","data":{"enabled":true}}`
+- admin set: `{"type":"admin.unattended.focus","data":{"playerId":"andy"}}`
+- admin clear: `{"type":"admin.unattended.focus","data":{"playerId":null}}`
+
+Companion fields include `unattendedFocusPlayerId` and `<playerId>_focused`.

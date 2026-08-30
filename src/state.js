@@ -58,6 +58,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
       unattendedMode: false,
       unattendedTarget: "",
       unattendedTargetReason: "",
+      unattendedFocusPlayerId: null,
       runtimeSettings: initialRuntimeSettings(),
       players
     };
@@ -70,6 +71,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
   state.unattendedMode = false;
   state.unattendedTarget = "";
   state.unattendedTargetReason = "";
+  state.unattendedFocusPlayerId = null;
 
   if (persisted.runtimeSettings && typeof persisted.runtimeSettings === "object") {
     const defaults = initialRuntimeSettings();
@@ -197,6 +199,16 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
     return { ok: true };
   }
 
+  function setUnattendedFocus(playerId) {
+    if (playerId === null || playerId === "" || playerId === undefined) {
+      state.unattendedFocusPlayerId = null;
+      return { ok: true };
+    }
+    if (!state.players[playerId]) return { ok: false, error: "Unknown player." };
+    state.unattendedFocusPlayerId = playerId;
+    return { ok: true };
+  }
+
   function setUnattendedMode(enabled) {
     if (typeof enabled !== "boolean") return { ok: false, error: "enabled must be true or false." };
     state.unattendedMode = enabled;
@@ -250,6 +262,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
       player.updatedAt = now;
     }
     state.compactMode = "priority";
+    state.unattendedFocusPlayerId = null;
     return { ok: true };
   }
 
@@ -370,7 +383,7 @@ export function createStateManager({ config, persistedState, onPersist, runtimeD
   return {
     state, playerDefinitions, publicConfig, safePlayerState, lowerThirdPlayer, lowerThirdSnapshot,
     persist, getLastPersistAt: () => lastPersistAt, setLastPersistAt: (value) => { lastPersistAt = value; },
-    setPlayerGame, setPlayerStatus, setPlayerAirState, setPlayerRotationActive, setUnattendedMode,
+    setPlayerGame, setPlayerStatus, setPlayerAirState, setPlayerRotationActive, setUnattendedMode, setUnattendedFocus,
     clearPlayerStatus, panicResetPlayer, resetEventState, updatePlayer, runtimeSettingsSnapshot, updateRuntimeSettings,
     effectiveStatusDefinition, effectiveStatuses, expireStatuses, resolveCompactMode
   };
